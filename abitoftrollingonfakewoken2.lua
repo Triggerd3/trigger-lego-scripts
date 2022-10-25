@@ -1,6 +1,7 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/UI-Libraries/master/scripts/uwuware-2.x.lua", true))()
 
 -- think about waiting then PARRYING
+-- NEEDS PING ADJUSTMENT ON AUTO-PARRY
 
 -- // Global Variables
 
