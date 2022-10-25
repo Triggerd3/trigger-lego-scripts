@@ -336,8 +336,12 @@ local CFlyToggle = MobilitySection:AddToggle({
     tip = "What do you mean hacks? It's the new legendary bell",
     callback = function(boolV)
         getgenv().CFly = boolV
-	    local Head = LocalPlayer.Character:WaitForChild("Head")
-	    Head.Anchored = boolV
+        if boolV then
+            sFLY()
+            print("a2")
+        else
+            Unfly() 
+        end
     end
 })
 CFlyToggle:AddBind({
@@ -429,7 +433,9 @@ local AntiDrownToggle = MiscSection:AddToggle({
             Deck.Name = "Deck"
             Deck.Parent = workspace
         else
-            workspace:FindFirstChild("Deck"):Destroy()
+            if workspace:FindFirstChild("Deck") then
+                workspace:FindFirstChild("Deck"):Destroy()
+            end
         end
     end})
 
@@ -528,17 +534,74 @@ RunService.Heartbeat:Connect(function(deltaTime)
     if SpeedHack then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
     end
-    if CFly then
-        --Full credit to peyton#9148
-        local moveDirection = LocalPlayer.Character:FindFirstChildOfClass('Humanoid').MoveDirection * (Library.flags["Fly Speed"] * deltaTime)
-		local headCFrame = LocalPlayer.Character.Head.CFrame
-		local cameraCFrame = workspace.CurrentCamera.CFrame
-		local cameraOffset = headCFrame:ToObjectSpace(cameraCFrame).Position
-		cameraCFrame = cameraCFrame * CFrame.new(-cameraOffset.X, -cameraOffset.Y, -cameraOffset.Z + 1)
-		local cameraPosition = cameraCFrame.Position
-		local headPosition = headCFrame.Position
-
-		local objectSpaceVelocity = CFrame.new(cameraPosition, Vector3.new(headPosition.X, cameraPosition.Y, headPosition.Z)):VectorToObjectSpace(moveDirection)
-		LocalPlayer.Character.Head.CFrame = CFrame.new(headPosition) * (cameraCFrame - cameraPosition) * CFrame.new(objectSpaceVelocity)
-    end
 end)
+
+SPEED2 = 1
+function sFLY()
+    repeat wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    local hrp = LocalPlayer.Character.HumanoidRootPart
+   
+	local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local SPEED = 0
+    local function fly2()
+		local BV = Instance.new('BodyVelocity')
+		BV.Name = "RollVelocity"
+        BV.P = math.huge
+		BV.Parent = hrp
+		
+		BV.Velocity = Vector3.new(0,0,0)
+		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+		
+		task.spawn(function()
+			repeat wait()
+				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+					SPEED = library.flags["Fly Speed"]
+				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+					SPEED = 0
+				end
+				if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+				elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+				else
+					BV.velocity = Vector3.new(0, 0, 0)
+				end
+			until not CFly
+			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			SPEED = 0
+			BV:Destroy()
+		end)
+	end
+	flyKeyDown = mouse.KeyDown:Connect(function(KEY)
+		if KEY:lower() == 'w' then
+			CONTROL.F = (SPEED2)
+		elseif KEY:lower() == 's' then
+			CONTROL.B = - (SPEED2)
+		elseif KEY:lower() == 'a' then
+			CONTROL.L = - (SPEED2)
+		elseif KEY:lower() == 'd' then 
+			CONTROL.R = (SPEED2)
+		end
+		pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+	end)
+	flyKeyUp = mouse.KeyUp:Connect(function(KEY)
+		if KEY:lower() == 'w' then
+			CONTROL.F = 0
+		elseif KEY:lower() == 's' then
+			CONTROL.B = 0
+		elseif KEY:lower() == 'a' then
+			CONTROL.L = 0
+		elseif KEY:lower() == 'd' then
+			CONTROL.R = 0
+		end
+	end)
+    fly2()
+end
+
+function Unfly()
+	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
+	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+end
