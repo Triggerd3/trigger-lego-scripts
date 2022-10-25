@@ -1,10 +1,12 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/UI-Libraries/master/scripts/uwuware-2.x.lua", true))()
 
+-- think about waiting then PARRYING
 
 -- // Global Variables
 
 getgenv().AutoParry = false
 getgenv().OpFacing = false
+getgenv().FacingOp = false
 getgenv().FeintRoll = true
 getgenv().SpeedHack = false
 getgenv().CFly = false
@@ -25,8 +27,8 @@ getgenv().AutoParrylist = {
     
     -- LIGHT MOVESET
         -- STILETTO (DAGGER)
-    ["rbxassetid://10300203796"] = {"Stiletto1", 0.1, "Parry", "Close"},
-    ["rbxassetid://10300357869"] = {"Stilleto2", 0.1, "Parry", "Close"},
+    ["rbxassetid://10300203796"] = {"Stiletto1", 0.05, "Parry", "Close"},
+    ["rbxassetid://10300357869"] = {"Stilleto2", 0.05, "Parry", "Close"},
     ["rbxassetid://10310816773"] = {"Critical", 0.2, "Parry", "Ranged"},
     ["rbxassetid://10307611102"] = {"StilettoRun", 0.1, "Parry", "Ranged"},
     ["rbxassetid://10571560499"] = {"Aerial", 0.1, "Parry", "Ranged"},
@@ -81,6 +83,9 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9255274417"] = {"Mud1", .2, "Parry", "Close"},
     ["rbxassetid://10109623939"] = {"Combo1", .2, "Parry", "Close"},
     ["rbxassetid://10109628136"] = {"Combo2", .2, "Parry", "Close"},
+        -- ENFORCER
+    ["rbxassetid://8916943692"] = {"Swing1", 0.2, "Parry", "Close"},
+    ["rbxassetid://8917108290"] = {"Swing2", 0.2, "Parry", "Close"},
         -- SQUIDWARD
     ["rbxassetid://10085445723"] = {"Combo1", .2, "Parry", "Close"},
     ["rbxassetid://10085688428"] = {"Combo2", .2, "Parry", "Close"},
@@ -93,16 +98,16 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9995957168"] = {"Rush", .4, "Roll", "Close"},
     ["rbxassetid://9995234248"] = {"Swoop", .4, "Roll", "Close"},
         --MONKE
-    ["rbxassetid://9145238578"] = {"Stomp", 0.6, "Parry", "Close"},
-    ["rbxassetid://9145941681"] = {"Kick", 0.6, "Roll", "Close"},
-    ["rbxassetid://9147807267"] = {"Grab", 0.6, "Parry", "Close"},
-    ["rbxassetid://9137450354"] = {"TripleStomp", 0.6, "Parry", "Close"},
-    ["rbxassetid://9157621952"] = {"Throw", 0.6, "Roll", "Close"},
+    ["rbxassetid://9145238578"] = {"Stomp", 0.6, "Parry", "Far"},
+    ["rbxassetid://9145941681"] = {"Kick", 0.6, "Roll", "Far"},
+    ["rbxassetid://9147807267"] = {"Grab", 0.2, "Parry", "Far"},
+    ["rbxassetid://9137450354"] = {"TripleStomp", 0.6, "Parry", "Far"},
+    ["rbxassetid://9157621952"] = {"Throw", 0.6, "Roll", "Far"},
         --SHARKO
     ["rbxassetid://8680523972"] = {"Swing1", 0.6, "Parry", "Close"},
     ["rbxassetid://8686839894"] = {"SwingCombo", 0.6, "Parry", "Close"},
     ["rbxassetid://8688521045"] = {"Kick", 0.6, "Roll", "Close"},
-    ["rbxassetid://8687295215"] = {"Spray", 0.4, "Parry", "Close"},
+    ["rbxassetid://8687295215"] = {"Spray", 0.4, "Parry", "Far"},
     
     -- RESONANCES
         --ESCAPIST
@@ -116,8 +121,10 @@ getgenv().AutoParrylist = {
 
 -- // Local Variables
 local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
 local PlayerService = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local CheckSpeed = ReplicatedStorage.Events.CheckSpeed
 local Players = PlayerService:GetChildren()
 local LocalPlayer = PlayerService.LocalPlayer
@@ -159,7 +166,7 @@ function Parry(tim)
     while tick() - t < tim do
         RunService.Heartbeat:Wait()
         if OpponentFeinted then
-            Roll(tim - .1)
+            Roll( - .05)
             return
         end    
     end
@@ -222,12 +229,18 @@ function ConnectListeners(character)
         end
         connection = game.ReplicatedStorage.CharacterData[(game.Players:GetPlayerFromCharacter(character)).Name].Cooldowns.ChildAdded:Connect(potentialfeint)
         
-        if character:FindFirstChild("Head") ~= nil and LocalPlayer.Character:FindFirstChild("Head") ~= nil and OpFacing then
-            local opToChar = (LocalPlayer.Character.HumanoidRootPart.Position - character.Head.HumanoidRootPart).Unit
-            local opLook = character.HumanoidRootPart.CFrame.LookVector
+        if (character:FindFirstChild("HumanoidRootPart") ~= nil and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") ~= nil) and OpFacing then
+            local opToChar = (LocalPlayer.Character.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Unit
+            local charLook = character.HumanoidRootPart.CFrame.LookVector
     
-            local dotProduct = opToChar:Dot(opLook)
-            print(dotProduct)
+            local dotProduct = opToChar:Dot(charLook)
+            if dotProduct < 0 then return end
+        end
+        if (character:FindFirstChild("HumanoidRootPart") ~= nil and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") ~= nil) and FacingOp then
+            local charToOp = (character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Unit
+            local opLook = LocalPlayer.character.HumanoidRootPart.CFrame.LookVector
+    
+            local dotProduct = charToOp:Dot(opLook)
             if dotProduct < 0 then return end
         end
 
@@ -315,12 +328,26 @@ local OppFacingUser = AutoParrySection:AddToggle({
     callback = function(boolV) 
         getgenv().OpFacing = boolV
     end})
-    
 OppFacingUser:AddBind({
     text = "Bind Opp-Vis toggle key",
     key = nil,
     callback = function()
-        library.options["Toggle Opponent Visibility"]:SetState(not library.options["Toggle Opponent Visibility"].state)
+        library.options["Toggle Opp-Vis"]:SetState(not library.options["Toggle Opp-Vis"].state)
+    end})  
+
+local UserFacingOpp = AutoParrySection:AddToggle({
+    text = "Toggle User-Vis", 
+    state = false,
+    position = "4",
+    tip = "Parry only when you're facing the opponent",
+    callback = function(boolV) 
+        getgenv().FacingOp = boolV
+    end})
+UserFacingOpp:AddBind({
+    text = "Bind Opp-Vis toggle key",
+    key = nil,
+    callback = function()
+        library.options["Toggle User-Vis"]:SetState(not library.options["Toggle User-Vis"].state)
     end})   
 
 
@@ -422,7 +449,7 @@ local AntiDrownToggle = MiscSection:AddToggle({
     text = "Anti-Drown",
     state = false,
     position = 2,
-    tip = "Just say you're lagging",
+    tip = "Just say you're lagging ; Doesn't work when ragdolled", -- think about having a bodyvelocity keep the player above
     callback = function(boolV)
         if boolV then 
             local Deck = Instance.new("Part")
@@ -509,7 +536,7 @@ local function NoclipLoop()
 end
 Noclipping = RunService.Stepped:Connect(NoclipLoop)
 
--- // Hook
+
 local __namecall
 __namecall = hookmetamethod(game, "__namecall", function(...)
     -- // Vars
@@ -536,20 +563,20 @@ RunService.Heartbeat:Connect(function(deltaTime)
     end
 end)
 
+CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
 SPEED2 = 1
 function sFLY()
     repeat wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     local hrp = LocalPlayer.Character.HumanoidRootPart
    
-	local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-	local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
 	local SPEED = 0
     local function fly2()
+        
 		local BV = Instance.new('BodyVelocity')
 		BV.Name = "RollVelocity"
         BV.P = math.huge
 		BV.Parent = hrp
-		
 		BV.Velocity = Vector3.new(0,0,0)
 		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
 		
@@ -574,8 +601,12 @@ function sFLY()
 			SPEED = 0
 			BV:Destroy()
 		end)
-	end
-	flyKeyDown = mouse.KeyDown:Connect(function(KEY)
+    end
+    if UIS:IsKeyDown("W") then CONTROL.F = (SPEED2)
+    elseif UIS:IsKeyDown("S") then CONTROL.B = - (SPEED2)
+    elseif UIS:IsKeyDown("A") then CONTROL.L = - (SPEED2)
+    elseif UIS:IsKeyDown("D") then CONTROL.R = (SPEED2) end
+    flyKeyDown = mouse.KeyDown:Connect(function(KEY)
 		if KEY:lower() == 'w' then
 			CONTROL.F = (SPEED2)
 		elseif KEY:lower() == 's' then
@@ -605,3 +636,16 @@ function Unfly()
 	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
 	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
+
+--- W.I.P
+game.Workspace.DebrisParts.ChildAdded:connect(function(part)
+    if part.Name == "Bolt" then 
+        local t = tick()
+        repeat 
+            RunService.Heartbeat:Wait() 
+            if tick() - t < 5 then return end
+        until 
+            (LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude < 10
+        Roll(0)
+    end -- bolt is the grapple bolt, going to try do this for all non animated attacks
+end)
