@@ -384,7 +384,7 @@ local InfJumpToggle = MobilitySection:AddToggle({
     text = "Toggle inf-jump",
     state = false,
     position = 2,
-    tip = "Just say your lagging",
+    tip = "Just say you're lagging",
     callback = function(boolV)
         getgenv().InfiniteJump = boolV
     end})
@@ -403,7 +403,7 @@ local NoClipToggle = MiscSection:AddToggle({
     text = "Toggle noclip",
     state = false,
     position = 1,
-    tip = "Just say your lagging",
+    tip = "Just say you're lagging",
     callback = function(boolV)
         getgenv().NoClipGlobal = boolV
     end})
@@ -413,7 +413,25 @@ NoClipToggle:AddBind({
     callback = function()
        library.options["Toggle noclip"]:SetState(not library.option["Toggle noclip"].state) 
     end})
-
+    
+local AntiDrownToggle = MiscSection:AddToggle({
+    text = "Anti-Drown",
+    state = false,
+    position = 2,
+    tip = "Just say you're lagging",
+    callback = function(boolV)
+        if boolV then 
+            local Deck = Instance.new("Part")
+            Deck.Position = workspace.Baseplate.Position + Vector3.new(0,4,0)
+            Deck.Size = Vector3.new(2400, 5, 2400)
+            Deck.Transparency = 0.50
+            Deck.Anchored = true
+            Deck.Name = "Deck"
+            Deck.Parent = workspace
+        else
+            workspace:FindFirstChild("Deck"):Destroy()
+        end
+    end})
 
 --[[
 local button1 = AutoParrySection:AddButton()
