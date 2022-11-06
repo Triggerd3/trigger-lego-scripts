@@ -1,5 +1,6 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/UI-Libraries/master/scripts/uwuware-2.x.lua", true))()
 
+-- think about waiting then PARRYING
 -- NEEDS PING ADJUSTMENT ON AUTO-PARRY
 
 -- // Global Variables
@@ -12,6 +13,9 @@ getgenv().SpeedHack = false
 getgenv().CFly = false
 getgenv().InfiniteJump = false
 getgenv().NoClipGlobal = false
+getgenv().AutoRun = false
+getgenv().AutoPerfectCast = false
+getgenv().SwingAfterParry = false
 
 getgenv().AutoParrylist = {
     
@@ -21,14 +25,14 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9890790186"] = {"Fist2", .35, "Parry", "Close"},
     ["rbxassetid://9890792365"] = {"Fist3", .35, "Parry", "Close"},
     ["rbxassetid://9890796934"] = {"Fist4", .35, "Parry", "Close"},
-    ["rbxassetid://9890800691"] = {"Critical", .65, "Parry", "Ranged"},
-    ["rbxassetid://9891303051"] = {"RunPunch", .3, "Parry", "Ranged"},
+    ["rbxassetid://9890800691"] = {"Critical", .5, "Parry", "Ranged"},
+    ["rbxassetid://9891303051"] = {"Run", .3, "Parry", "Ranged"},
     ["rbxassetid://10558610693"] = {"Aerial", .3, "Parry", "Far"},
     
     -- LIGHT MOVESET
         -- STILETTO (DAGGER)
-    ["rbxassetid://10300203796"] = {"Stiletto1", 0.1, "Parry", "Close"},
-    ["rbxassetid://10300357869"] = {"Stilleto2", 0.1, "Parry", "Close"},
+    ["rbxassetid://10300203796"] = {"Stiletto1", 0.08, "Parry", "Close"},
+    ["rbxassetid://10300357869"] = {"Stilleto2", 0.08, "Parry", "Close"},
     ["rbxassetid://10310816773"] = {"Critical", 0.45, "Parry", "Ranged"},
     ["rbxassetid://10307611102"] = {"StilettoRun", 0.06, "Parry", "Ranged"},
     ["rbxassetid://10571560499"] = {"Aerial", 0.03, "Parry", "Ranged"},
@@ -37,8 +41,8 @@ getgenv().AutoParrylist = {
     ["rbxassetid://10225390984"] = {"Rapier2", 0.4, "Parry", "Close"},
     ["rbxassetid://10234795108"] = {"Critical", 0.5, "Parry", "Ranged"},
         -- FLINTLOCK (PISTOL)
-    ["rbxassetid://10206784771"] = {"Shoot1", 0.1, "Parry", "Ranged"},
-    ["rbxassetid://10206804975"] = {"Shoot2", 0.1, "Parry", "Ranged"},
+    ["rbxassetid://10206784771"] = {"Shoot1", 0.15, "Parry", "Ranged"},
+    ["rbxassetid://10206804975"] = {"Shoot2", 0.15, "Parry", "Ranged"},
     ["rbxassetid://10206765261"] = {"RunShoot", 0.1, "Parry", "Ranged"},
     ["rbxassetid://8787495611"] = {"Critical", 0.1, "Parry", "Ranged"},
     
@@ -57,8 +61,8 @@ getgenv().AutoParrylist = {
     ["rbxassetid://11363516302"] = {"SPEAR1", 0.2, "Parry", "Close"},
     ["rbxassetid://11363591881"] = {"SPEAR2", 0.2, "Parry", "Close"},
     ["rbxassetid://11404365708"] = {"SPEARRUN", 0.2, "Parry", "Ranged"},
-    ["rbxassetid://11425673362"] = {"SPEARCRITICAL1", 0.2, "Parry", "Ranged"},
-    ["rbxassetid://11425773935"] = {"SPEARCRITICAL2", 0.2, "Parry", "Ranged"},
+    ["rbxassetid://11425673362"] = {"Critical", 0.4, "Parry", "Ranged"},
+    ["rbxassetid://11425773935"] = {"Critical2", 0, "Parry", "Ranged"},
             -- SPEAR (ONE-HANDED)
     ["rbxassetid://11404159898"] = {"SPEAR1", 0.2, "Parry", "Close"},
     ["rbxassetid://11404162476"] = {"SPEAR2", 0.2, "Parry", "Close"},
@@ -70,12 +74,12 @@ getgenv().AutoParrylist = {
     ["rbxassetid://10013909049"] = {"Heavy1", 0.3, "Parry", "Close"},
     ["rbxassetid://10013911426"] = {"Heavy2", 0.3, "Parry", "Close"},
     ["rbxassetid://10013915154"] = {"Heavy3", 0.3, "Parry", "Close"},
-    ["rbxassetid://10022838306"] = {"Critical", 0.7, "Parry", "Close"},
-    ["rbxassetid://10013919534"] = {"HeavyRun", 0.4, "Parry", "Ranged"},
+    ["rbxassetid://10022838306"] = {"Critical", 0.7, "Parry", "Ranged"},
+    ["rbxassetid://10013919534"] = {"HeavyRun", 0.3, "Parry", "Ranged"},
     
         -- ZWEIHANDER (GREATSWORD)
-    ["rbxassetid://10787560419"] = {"Great1", 0.4, "Parry", "Close"},
-    ["rbxassetid://10873957240"] = {"Great2", 0.4, "Parry", "Close"},
+    ["rbxassetid://10787560419"] = {"Great1", 0.35, "Parry", "Close"},
+    ["rbxassetid://10873957240"] = {"Great2", 0.35, "Parry", "Close"},
     ["rbxassetid://10876826705"] = {"Critical", 0.7, "Parry", "Close"},
     ["rbxassetid://10771933209"] = {"GreatRun", 0.5, "Parry", "Ranged"},
     
@@ -98,10 +102,10 @@ getgenv().AutoParrylist = {
     ["rbxassetid://10096299376"] = {"Jetstream", .2, "Roll", "Ranged"}, --????????
     ["rbxassetid://10098630808"] = {"FlipKick", .2, "Parry", "Close"},
         -- OWL
-    ["rbxassetid://9984057511"] = {"LeftSwing", .2, "Parry", "Close"},
-    ["rbxassetid://9983925053"] = {"RightSwing", .2, "Parry", "Close"},
-    ["rbxassetid://9995957168"] = {"Rush", .4, "Roll", "Close"},
-    ["rbxassetid://9995234248"] = {"Swoop", .4, "Roll", "Close"},
+    ["rbxassetid://9984057511"] = {"LeftSwing", .2, "Parry", "Ranged"},
+    ["rbxassetid://9983925053"] = {"RightSwing", .2, "Parry", "Ranged"},
+    ["rbxassetid://9995957168"] = {"Rush", .4, "Roll", "Ranged"},
+    ["rbxassetid://9995234248"] = {"Swoop", .4, "Roll", "Ranged"},
         --MONKE
     ["rbxassetid://9145238578"] = {"Stomp", 0.2, "Parry", "Far"},
     ["rbxassetid://9145941681"] = {"Kick", 0, "Roll", "Far"},
@@ -196,14 +200,15 @@ function Block(attack)
     
     local st = os.clock()
     
-    while os.clock() - st < attack[2] do
+    while os.clock() - st < .3 do
         task.wait()
+        print("1")
         local args = {
             [1] = "Hold"
         }
         game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
     end
-    
+    print("2")
     task.wait()
     local args = {
         [1] = "Up"
@@ -211,6 +216,15 @@ function Block(attack)
     game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
     
 end
+
+function swing()
+    local args = {
+        [1] = "Down",
+        [2] = false
+    }
+    game:GetService("Players").LocalPlayer.Character.CharacterHandler.M1:FireServer(unpack(args))
+end
+
 
 function Roll()
     keypress(0x51) -- change to characterhandler.q?
@@ -222,7 +236,7 @@ end
 function DefensiveReaction(attack, FeintRoll)
     if attack[3] == "Parry" then
         if game.ReplicatedStorage.CharacterData[game.Players.LocalPlayer.Name].StatusFolder:FindFirstChild("ParryCD") ~= nil then
-            Block()
+            if attack[1] == "Critical" or attack[1] == "StrongLeft" then task.wait(.1) Roll() else Block(attack) end
         else
             Parry()
         end
@@ -241,7 +255,7 @@ function ConnectListeners(character)
         if AutoParry == false then return end
         if not AutoParrylist[animtrack.Animation.AnimationId] then return end -- check on why parry anim slips past
         
-        local range = 20
+        local range = 25
         if AutoParrylist[animtrack.Animation.AnimationId][4] == "Ranged" then range = 30 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "Far" then range = 60 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "MONKE" then range = 150 end 
         if (LocalPlayer.Character.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude > range then return end
         
@@ -265,7 +279,8 @@ function ConnectListeners(character)
                 print("FEINTED")
                 OpponentFeinted = true
                 if FeintRoll then 
-                    Roll(.15)
+                    task.wait(.1)
+                    Roll()
                 end
             end
         end
@@ -315,83 +330,27 @@ local Tab = Library:AddTab("fakewoken v3", 1)
 
 local Column1 = Tab:AddColumn()
 
-local AutoParrySection = Column1:AddSection("Auto-Parry")
-
---AutoParrySection:AddLabel("Label sample")
-
---AutoParrySection:AddDivider("Divider Sample")
-
-local AutoParryToggle = AutoParrySection:AddToggle({
-    text = "Toggle Auto-Parry", 
-    state = false,
-    position = "1",
-    tip = "Try not to interfere with keys used by the auto-parry (dodge, cancel)",
-    callback = function(boolV)
-        getgenv().AutoParry = boolV
-    end})
-
-AutoParryToggle:AddBind({
-    text = "Bind Auto-Parry toggle key",
-    key = nil,
-    callback = function()
-        library.options["Toggle Auto-Parry"]:SetState(not library.options["Toggle Auto-Parry"].state)
-    end})
-    
-local RollonFeintToggle = AutoParrySection:AddToggle({
-    text = "Roll on feint", 
-    state = false,
-    position = "2",
-    tip = "Rolls on the opponent's feint",
-    callback = function(boolV)
-        getgenv().FeintRoll = boolV
-    end})
-RollonFeintToggle:AddBind({
-    text = "Bind roll on feint toggle key",
-    key = nil,
-    callback = function()
-        library.options["Roll on feint"]:SetState(not library.options["Roll on feint"].state)
-    end})
-
-local OppFacingUser = AutoParrySection:AddToggle({
-    text = "Toggle Opp-Vis", 
-    state = false,
-    position = "3",
-    tip = "Parry only when opponent is facing you",
-    callback = function(boolV) 
-        getgenv().OpFacing = boolV
-    end})
-OppFacingUser:AddBind({
-    text = "Bind Opp-Vis toggle key",
-    key = nil,
-    callback = function()
-        library.options["Toggle Opp-Vis"]:SetState(not library.options["Toggle Opp-Vis"].state)
-    end})  
-
-local UserFacingOpp = AutoParrySection:AddToggle({
-    text = "Toggle User-Vis", 
-    state = false,
-    position = "4",
-    tip = "Parry only when you're facing the opponent",
-    callback = function(boolV) 
-        getgenv().FacingOp = boolV
-    end})
-UserFacingOpp:AddBind({
-    text = "Bind Opp-Vis toggle key",
-    key = nil,
-    callback = function()
-        library.options["Toggle User-Vis"]:SetState(not library.options["Toggle User-Vis"].state)
-    end})   
-
-
-
 
 --- MOBILITY
 local MobilitySection = Column1:AddSection("Mobility")
 
+
+local RunToggle = MobilitySection:AddToggle({
+    text = "Auto Run",
+    state = false,
+    position = 1,
+    tip = "Automatically run when pressing W",
+    callback = function(boolV)
+        getgenv().AutoRun = boolV
+    end
+})
+
+
+
 local CFlyToggle = MobilitySection:AddToggle({
     text = "Fly",
     state = false,
-    position = 1,
+    position = 2,
     tip = "What do you mean hacks? It's the new legendary bell",
     callback = function(boolV)
         getgenv().CFly = boolV
@@ -456,6 +415,92 @@ InfJumpToggle:AddBind({
     key = nil,
     callback = function()
        library.options["Toggle inf-jump"]:SetState(not library.options["Toggle inf-jump"].state) 
+    end})
+
+
+-- AUTOPARRY
+
+local AutoParrySection = Column1:AddSection("Auto-Parry")
+
+local AutoParryToggle = AutoParrySection:AddToggle({
+    text = "Toggle Auto-Parry", 
+    state = false,
+    position = "1",
+    tip = "Try not to interfere with keys used by the auto-parry (dodge, cancel)",
+    callback = function(boolV)
+        getgenv().AutoParry = boolV
+    end})
+
+AutoParryToggle:AddBind({
+    text = "Bind Auto-Parry toggle key",
+    key = nil,
+    callback = function()
+        library.options["Toggle Auto-Parry"]:SetState(not library.options["Toggle Auto-Parry"].state)
+    end})
+    
+local RollonFeintToggle = AutoParrySection:AddToggle({
+    text = "Roll on feint", 
+    state = false,
+    position = "2",
+    tip = "Rolls on the opponent's feint",
+    callback = function(boolV)
+        getgenv().FeintRoll = boolV
+    end})
+RollonFeintToggle:AddBind({
+    text = "Bind roll on feint toggle key",
+    key = nil,
+    callback = function()
+        library.options["Roll on feint"]:SetState(not library.options["Roll on feint"].state)
+    end})
+
+local OppFacingUser = AutoParrySection:AddToggle({
+    text = "Toggle Opp-Vis", 
+    state = false,
+    position = "3",
+    tip = "Parry only when opponent is facing you",
+    callback = function(boolV) 
+        getgenv().OpFacing = boolV
+    end})
+OppFacingUser:AddBind({
+    text = "Bind Opp-Vis toggle key",
+    key = nil,
+    callback = function()
+        library.options["Toggle Opp-Vis"]:SetState(not library.options["Toggle Opp-Vis"].state)
+    end})  
+
+local UserFacingOpp = AutoParrySection:AddToggle({
+    text = "Toggle User-Vis", 
+    state = false,
+    position = "4",
+    tip = "Parry only when you're facing the opponent",
+    callback = function(boolV) 
+        getgenv().FacingOp = boolV
+    end})
+UserFacingOpp:AddBind({
+    text = "Bind Opp-Vis toggle key",
+    key = nil,
+    callback = function()
+        library.options["Toggle User-Vis"]:SetState(not library.options["Toggle User-Vis"].state)
+    end})   
+
+
+-- add combat section
+local SwingAfterParryToggle = AutoParrySection:AddToggle({
+    text = "Swing after Parry", 
+    state = false,
+    position = "5",
+    tip = "Swing after parrying",
+    callback = function(boolV) 
+        getgenv().SwingAfterParry = boolV
+    end})
+    
+local AutoPerfectCastToggle = AutoParrySection:AddToggle({
+    text = "Auto Perfect Cast", 
+    state = false,
+    position = "5",
+    tip = "Automatically perfect cast your strong left; allows you to right click to cancel your mantra",
+    callback = function(boolV) 
+        getgenv().AutoPerfectCast = boolV
     end})
 
 
@@ -641,18 +686,48 @@ function Unfly()
 end
 
 --- W.I.P
+
+UIS.InputBegan:connect(function(key)
+    if key.KeyCode == Enum.KeyCode.W and AutoRun then
+        local args = {
+            [1] = "RunStart"
+        }
+        game:GetService("Players").LocalPlayer.Character.Run.RemoteEvent:FireServer(unpack(args))
+    end
+end)
+
+
 game.Workspace.DebrisParts.ChildAdded:connect(function(part)
-    if part.Name == "Bolt" then 
+    if part.Name == "Arrow" then 
         local t = tick()
         repeat 
             RunService.Heartbeat:Wait() 
-            if tick() - t < 5 then return end
+            if tick() - t > 5 then return end
         until 
             (LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude < 10
-        Roll(0)
-    end -- bolt is the grapple bolt, going to try do this for all non animated attacks
+        Parry()
+    elseif part.Name == "Bolt" then 
+        local t = tick()
+        repeat 
+            RunService.Heartbeat:Wait() 
+            if tick() - t > 5 then return end
+        until 
+            (LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude < 10
+        Parry()
+    end
+end)
+
+
+game:GetService("Players").LocalPlayer.Character.ChildAdded:connect(function(ch)
+    -- swing directly after parry
+    if ch.Name == "Parry" and SwingAfterParry then
+        task.wait()
+        swing()
+    elseif ch.Name == "Strong Left" and AutoPerfectCast then
+        task.wait()
+        swing()
+    end
 end)
 
 
 
--- wait reaction time before reacting
