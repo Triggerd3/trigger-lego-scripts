@@ -5,6 +5,8 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefa
 
 -- // Global Variables
 
+--  - mod shirt
+
 getgenv().AutoParry = false
 getgenv().OpFacing = false
 getgenv().FacingOp = false
@@ -16,6 +18,7 @@ getgenv().NoClipGlobal = false
 getgenv().AutoRun = false
 getgenv().AutoPerfectCast = false
 getgenv().SwingAfterParry = false
+getgenv().NoAnimation = false
 
 getgenv().AutoParrylist = {
     
@@ -32,7 +35,7 @@ getgenv().AutoParrylist = {
     -- LIGHT MOVESET
         -- STILETTO (DAGGER)
     ["rbxassetid://10300203796"] = {"Stiletto1", 0.08, "Parry", "Close"},
-    ["rbxassetid://10300357869"] = {"Stilleto2", 0.08, "Parry", "Close"},
+    ["rbxassetid://10300357869"] = {"Stilleto2", 0, "Parry", "Close"},
     ["rbxassetid://10310816773"] = {"Critical", 0.45, "Parry", "Ranged"},
     ["rbxassetid://10307611102"] = {"StilettoRun", 0.06, "Parry", "Ranged"},
     ["rbxassetid://10571560499"] = {"Aerial", 0.03, "Parry", "Ranged"},
@@ -141,20 +144,6 @@ local LocalPlayer = PlayerService.LocalPlayer
 local OpponentFeinted = false
 
 -- // Functions
-
-function noAnimations()
-    game.RunService.RenderStepped:connect(function()
-        local players = game:GetService("Players")
-        local player = players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-
-        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-    	    track:Stop()
-        end
-    end)
-end
-
 function CancelAttack()
     local args = {
         [1] = "Down",
@@ -201,12 +190,11 @@ function Block(attack)
     local st = os.clock()
     
     while os.clock() - st < .3 do
-        task.wait()
-        print("1")
         local args = {
             [1] = "Hold"
         }
         game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
+        task.wait()
     end
     print("2")
     task.wait()
@@ -303,19 +291,36 @@ end
 
 -- // Initiate Script
 
+modlist = {}
+
 for _, plr in pairs(Players) do
     if plr == LocalPlayer then continue end
     plr.CharacterAdded:Connect(function()
         repeat wait() until plr.Character:FindFirstChild("Humanoid")
         print("Renew connection:")
         ConnectListeners(plr.Character)
+        if plr.Character:FindFirstChild("Shirt") and plr.Character.Shirt.ShirtTemplate == "rbxassetid://9681905497" then
+            local result = false
+            for _, p in pairs(modlist) do
+                if p == plr.Name then result = true end
+            end
+            if not result then 
+                Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
+                table.insert(modlist, #modlist + 1, plr.Name)
+            end
+        end
     end)
     
     local character = plr.Character or plr.CharacterAdded:Wait()
-    if character:FindFirstChild("Humanoid") == nil then continue end
-    ConnectListeners(character)
+    task.spawn(function()
+        repeat wait() until character:FindFirstChild("Humanoid") ~= nil
+        if plr.Character:FindFirstChild("Shirt") and plr.Character.Shirt.ShirtTemplate == "rbxassetid://9681905497" then
+            Library:SendNotification(10, ("Moderator Detected:".. plr.Name))
+            table.insert(modlist, #modlist + 1, plr.Name)
+        end
+        ConnectListeners(character)
+    end)
 end
-
 
 game:GetService("Players").PlayerAdded:Connect(function(plr)
     plr.CharacterAdded:Connect(function()
@@ -324,6 +329,13 @@ game:GetService("Players").PlayerAdded:Connect(function(plr)
     end)
 end)
 
+for i,v in pairs(workspace.DebrisParts:GetChildren()) do
+    if v.Name == "Corpse" then
+        if v:FindFirstChild("Shirt") and v.Shirt.ShirtTemplate == "rbxassetid://9681905497" then
+            Library:SendNotification(10, ("Moderator Detected: (CURRENTLY DEAD)"))
+        end
+    end
+end
 
 --- LIBRARY
 local Tab = Library:AddTab("fakewoken v3", 1)
@@ -542,6 +554,21 @@ local AntiDrownToggle = MiscSection:AddToggle({
             end
         end
     end})
+    
+local AnimsToggle = MiscSection:AddToggle({
+    text = "No Animations",
+    state = false,
+    position = 1,
+    tip = "Make your opponent cry with a single line of code",
+    callback = function(boolV)
+        getgenv().NoAnimation = boolV
+    end})
+AnimsToggle:AddBind({
+    text = "No Animation Toggle Key",
+    key = nil,
+    callback = function()
+       library.options["No Animations"]:SetState(not library.option["No Animations"].state) 
+    end})
 
 
 Library:Init()
@@ -608,6 +635,13 @@ end)
 RunService.Heartbeat:Connect(function(deltaTime)
     if SpeedHack then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
+    end
+    if NoAnimation then 
+        local character = LocalPlayer.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+    	    track:Stop()
+        end
     end
 end)
 
@@ -706,7 +740,8 @@ game.Workspace.DebrisParts.ChildAdded:connect(function(part)
         until 
             (LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude < 10
         Parry()
-    elseif part.Name == "Bolt" then 
+    end
+    if part.Name == "Bolt" then 
         local t = tick()
         repeat 
             RunService.Heartbeat:Wait() 
@@ -717,9 +752,7 @@ game.Workspace.DebrisParts.ChildAdded:connect(function(part)
     end
 end)
 
-
-game:GetService("Players").LocalPlayer.Character.ChildAdded:connect(function(ch)
-    -- swing directly after parry
+LocalPlayer.Character.ChildAdded:Connect(function(ch)
     if ch.Name == "Parry" and SwingAfterParry then
         task.wait()
         swing()
@@ -728,6 +761,20 @@ game:GetService("Players").LocalPlayer.Character.ChildAdded:connect(function(ch)
         swing()
     end
 end)
+
+
+LocalPlayer.CharacterAdded:Connect(function(character)
+    character.ChildAdded:Connect(function(ch)
+        if ch.Name == "Parry" and SwingAfterParry then
+            task.wait()
+            swing()
+        elseif ch.Name == "Strong Left" and AutoPerfectCast then
+            task.wait()
+            swing()
+        end
+    end)
+end)
+
 
 
 
