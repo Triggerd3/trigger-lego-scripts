@@ -1,4 +1,4 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/UI-Libraries/master/scripts/uwuware-2.x.lua", true))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Triggerd3/trigger-lego-scripts/main/edited-hub.lua", true))()
 
 -- think about waiting then PARRYING
 -- NEEDS PING ADJUSTMENT ON AUTO-PARRY
@@ -25,7 +25,7 @@ getgenv().AutoParrylist = {
     
     -- FIST MOVESET
         --BARE FISTS (FISTS)
-    ["rbxassetid://9890788066"] = {"Fist1", .35, "Parry", "Close", "Swing"}, -- last one is windup
+    ["rbxassetid://9890788066"] = {"Fist1", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890790186"] = {"Fist2", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890792365"] = {"Fist3", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890796934"] = {"Fist4", .35, "Parry", "Close", "Swing"},
@@ -281,8 +281,8 @@ function ConnectListeners(character)
             CancelAttack()
         end
         
-        print(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.05))
-        task.wait(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.05)) -- multiply by animtrack.speed?
+        print(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005))
+        task.wait(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005)) -- multiply by animtrack.speed?
 
         if not OpponentFeinted then DefensiveReaction(AutoParrylist[animtrack.Animation.AnimationId]) end
         connection:Disconnect()
@@ -447,7 +447,7 @@ NoClipToggle:AddBind({
     text = "Noclip toggle key",
     key = nil,
     callback = function()
-       library.options["Toggle noclip"]:SetState(not library.option["Toggle noclip"].state) 
+       library.options["Toggle noclip"]:SetState(not library.options["Toggle noclip"].state) 
     end})
     
 local AntiDrownToggle = MiscSection:AddToggle({
@@ -483,9 +483,22 @@ AnimsToggle:AddBind({
     text = "No Animation Toggle Key",
     key = nil,
     callback = function()
-       library.options["No Animations"]:SetState(not library.option["No Animations"].state) 
+       library.options["No Animations"]:SetState(not library.options["No Animations"].state) 
     end})
-
+    
+local RejoinButton = MiscSection:AddButton({
+    text = "Rejoin",
+    nomouse = true,
+    tip = "Rejoin when not in danger to max heal yourself",
+    callback = function(boolV)
+        if #(game.Players:GetPlayers()) <= 1 then
+		    LocalPlayer:Kick("\nRejoining...")
+		    task.wait()
+		    game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
+	    else
+		    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+	    end
+    end})
 
 
 -- AUTOPARRY
@@ -653,23 +666,23 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
 end)
 
 RunService.Heartbeat:Connect(function(deltaTime)
-    local character = LocalPlayer.Character
-    local humanoid = character:FindFirstChild("Humanoid")
     if SpeedHack then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
     end
     if NoAnimation then 
+        local character = LocalPlayer.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
         for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
     	    track:Stop()
         end
     end
     if SpeedSwing then
+        local character = LocalPlayer.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
         for _, track in ipairs(humanoid.Animator:GetPlayingAnimationTracks()) do
-            if AutoParrylist[track.Animation.AnimationId] == nil then continue end
-    	    if AutoParrylist[track.Animation.AnimationId][5] == "Swing" then
-    	        print("aauugh")
-    	        track:AdjustSpeed(5)
-    	    end
+    	   if AutoParryList[track.Animation.AnimationId][5] == "Swing" then
+    	       track:AdjustSpeed(5)
+    	   end
         end
     end
     -- mixup swingspeed option lmfao
