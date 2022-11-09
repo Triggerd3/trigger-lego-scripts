@@ -29,8 +29,8 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9890790186"] = {"Fist2", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890792365"] = {"Fist3", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890796934"] = {"Fist4", .35, "Parry", "Close", "Swing"},
-    ["rbxassetid://9890800691"] = {"Critical", .4, "Parry", "Ranged", "Swing"},
-    ["rbxassetid://9891303051"] = {"Run", .3, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://9890800691"] = {"Critical", .35, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://9891303051"] = {"Run", .7, "Parry", "Ranged", "Swing"},
     ["rbxassetid://10558610693"] = {"Aerial", .3, "Parry", "Far", "Not"},
     
     -- LIGHT MOVESET
@@ -111,7 +111,7 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9995957168"] = {"Rush", .4, "Roll", "Ranged", "Swing"},
     ["rbxassetid://9995234248"] = {"Swoop", .4, "Roll", "Ranged", "Swing"},
         --MONKE
-    ["rbxassetid://9145238578"] = {"Stomp", 0.2, "Parry", "Far", "Swing"},
+    ["rbxassetid://9145238578"] = {"Stomp", 0, "Parry", "Far", "Swing"},
     ["rbxassetid://9145941681"] = {"Kick", 0, "Roll", "Far", "Swing"},
     ["rbxassetid://9147807267"] = {"Grab", 0.2, "Parry", "Far", "Swing"},
     ["rbxassetid://9137450354"] = {"TripleStomp", 0.6, "Parry", "Far", "Swing"},
@@ -280,8 +280,10 @@ function ConnectListeners(character)
         if game.ReplicatedStorage.CharacterData[character.Name].StatusFolder:FindFirstChild("Hitting") ~= nil then
             CancelAttack()
         end
-        
-        print(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005))
+        --[[
+        if AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005) > 0.3 and game.ReplicatedStorage.CharacterData[game.Players.LocalPlayer.Name].StatusFolder:FindFirstChild("ParryCD") ~= nil then
+            DefensiveReaction()
+        end]]
         task.wait(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005)) -- multiply by animtrack.speed?
 
         if not OpponentFeinted then DefensiveReaction(AutoParrylist[animtrack.Animation.AnimationId]) end
@@ -666,23 +668,24 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
 end)
 
 RunService.Heartbeat:Connect(function(deltaTime)
+    local character = LocalPlayer.Character
+    local humanoid = character:FindFirstChild("Humanoid")
     if SpeedHack then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
+        LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
     end
     if NoAnimation then 
-        local character = LocalPlayer.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
         for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
     	    track:Stop()
         end
     end
     if SpeedSwing then
-        local character = LocalPlayer.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
         for _, track in ipairs(humanoid.Animator:GetPlayingAnimationTracks()) do
-    	   if AutoParryList[track.Animation.AnimationId][5] == "Swing" then
-    	       track:AdjustSpeed(5)
-    	   end
+            if AutoParrylist[track.Animation.AnimationId] == nil then continue end
+            print("b")
+    	    if AutoParrylist[track.Animation.AnimationId][5] == "Swing" then
+    	        print("a")
+    	        track:AdjustSpeed(5)
+    	    end
         end
     end
     -- mixup swingspeed option lmfao
