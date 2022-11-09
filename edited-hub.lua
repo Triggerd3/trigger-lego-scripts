@@ -11,7 +11,7 @@
 		getgenv().library:Unload()
 	end
 
-	local library = {design = getgenv().design == "kali" and "kali" or "uwuware", tabs = {}, draggable = true, flags = {}, title = "TriggerHub", open = false, mousestate = inputService.MouseIconEnabled, popup = nil, instances = {}, connections = {}, options = {}, notifications = {}, tabSize = 0, theme = {}, foldername = "uw_configs", fileext = ".uw"}
+	local library = {design = getgenv().design == "kali" and "kali" or "TriggerHub", tabs = {}, draggable = true, flags = {}, title = "TriggerHub", open = false, mousestate = inputService.MouseIconEnabled, popup = nil, instances = {}, connections = {}, options = {}, notifications = {}, tabSize = 0, theme = {}, foldername = "triggerhub_configs", fileext = ".txt"}
 	getgenv().library = library
 
 	--Locals
