@@ -29,8 +29,8 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9890790186"] = {"Fist2", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890792365"] = {"Fist3", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890796934"] = {"Fist4", .35, "Parry", "Close", "Swing"},
-    ["rbxassetid://9890800691"] = {"Critical", .6, "Parry", "Ranged", "Swing"},
-    ["rbxassetid://9891303051"] = {"Run", .7, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://9890800691"] = {"Critical", .55, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://9891303051"] = {"Run", .3, "Parry", "Ranged", "Swing"},
     ["rbxassetid://10558610693"] = {"Aerial", .3, "Parry", "Far", "Not"},
     
     -- LIGHT MOVESET
@@ -667,13 +667,22 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
     return __namecall(...)
 end)
 
+local animation2 = Instance.new("Animation")
+animation2.AnimationId = "rbxassetid://9892586559"
+
+--[[
+
+        local animationTrack2 = humanoid.Animator:LoadAnimation(animation2)
+		animationTrack2:Play()
+]]
+
 RunService.Heartbeat:Connect(function(deltaTime)
     local character = LocalPlayer.Character
     local humanoid = character:FindFirstChild("Humanoid")
     if SpeedHack then
         LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
     end
-    if NoAnimation then 
+    if NoAnimation then
         for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
     	    track:Stop()
         end
@@ -681,9 +690,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
     if SpeedSwing then
         for _, track in ipairs(humanoid.Animator:GetPlayingAnimationTracks()) do
             if AutoParrylist[track.Animation.AnimationId] == nil then continue end
-            print("b")
     	    if AutoParrylist[track.Animation.AnimationId][5] == "Swing" then
-    	        print("a")
     	        track:AdjustSpeed(5)
     	    end
         end
