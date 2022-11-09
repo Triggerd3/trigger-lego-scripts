@@ -29,7 +29,7 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9890790186"] = {"Fist2", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890792365"] = {"Fist3", .35, "Parry", "Close", "Swing"},
     ["rbxassetid://9890796934"] = {"Fist4", .35, "Parry", "Close", "Swing"},
-    ["rbxassetid://9890800691"] = {"Critical", .35, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://9890800691"] = {"Critical", .6, "Parry", "Ranged", "Swing"},
     ["rbxassetid://9891303051"] = {"Run", .7, "Parry", "Ranged", "Swing"},
     ["rbxassetid://10558610693"] = {"Aerial", .3, "Parry", "Far", "Not"},
     
