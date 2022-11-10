@@ -294,9 +294,6 @@ end
 
 -- // Initiate Script
 
-function checkClothId(template, Id):
-    
-
 modlist = {}
 
 for _, plr in pairs(Players) do
@@ -339,8 +336,8 @@ end)
 ------------------------------------------------------------------
 for i,v in pairs(workspace.DebrisParts:GetChildren()) do
     if v.Name == "Corpse" then
-        if plr.Character:FindFirstChild("Shirt") == nil then continue end
-        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
+        if v:FindFirstChild("Shirt") == nil then continue end
+        f, _ = string.find(v.Shirt.ShirtTemplate, "9681905497")
         if f == nil then continue end
         Library:SendNotification(10, ("Moderator Detected: (CURRENTLY DEAD)"))
     end
@@ -830,7 +827,7 @@ LocalPlayer.CharacterAdded:Connect(function(character)
         elseif ch.Name == "Strong Left" and AutoPerfectCast then
             task.wait()
             swing()
-        
+        end
     end)
 end)
 
@@ -839,4 +836,3 @@ game:GetService("Players").PlayerRemoving:Connect(function(PlayerRemoving)
 	    library:SaveConfig(library.flags["Config List"])
     end
 end)
-
