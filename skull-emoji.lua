@@ -1,6 +1,6 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Triggerd3/trigger-lego-scripts/main/edited-hub.lua", true))()
+Library:LoadConfig(Library.flags["Config List"])
 
--- think about waiting then PARRYING
 -- NEEDS PING ADJUSTMENT ON AUTO-PARRY
 
 -- // Global Variables
@@ -111,11 +111,11 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9995957168"] = {"Rush", .4, "Roll", "Ranged", "Swing"},
     ["rbxassetid://9995234248"] = {"Swoop", .4, "Roll", "Ranged", "Swing"},
         --MONKE
-    ["rbxassetid://9145238578"] = {"Stomp", 0, "Parry", "Far", "Swing"},
-    ["rbxassetid://9145941681"] = {"Kick", 0, "Roll", "Far", "Swing"},
-    ["rbxassetid://9147807267"] = {"Grab", 0.2, "Parry", "Far", "Swing"},
-    ["rbxassetid://9137450354"] = {"TripleStomp", 0.6, "Parry", "Far", "Swing"},
-    ["rbxassetid://9157621952"] = {"Throw", 0.6, "Roll", "Far", "Swing"},
+    ["rbxassetid://9145238578"] = {"Stomp", 0, "Parry", "MONKE", "Swing"},
+    ["rbxassetid://9145941681"] = {"Kick", 0, "Roll", "MONKE", "Swing"},
+    ["rbxassetid://9147807267"] = {"Grab", 0.2, "Parry", "MONKE", "Swing"},
+    ["rbxassetid://9137450354"] = {"TripleStomp", 0.6, "Parry", "MONKE", "Swing"},
+    ["rbxassetid://9157621952"] = {"Throw", 0.6, "Roll", "MONKE", "Swing"},
         --SHARKO
     ["rbxassetid://8680523972"] = {"Swing1", 0.5, "Parry", "Far", "Swing"},
     ["rbxassetid://8686839894"] = {"SwingCombo", 0.5, "Parry", "Far", "Swing"},
@@ -245,7 +245,7 @@ function ConnectListeners(character)
         if not AutoParrylist[animtrack.Animation.AnimationId] then return end -- check on why parry anim slips past
         
         local range = 25
-        if AutoParrylist[animtrack.Animation.AnimationId][4] == "Ranged" then range = 30 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "Far" then range = 60 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "MONKE" then range = 150 end 
+        if AutoParrylist[animtrack.Animation.AnimationId][4] == "Ranged" then range = 30 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "Far" then range = 60 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "MONKE" then range = 200 end 
         if (LocalPlayer.Character.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude > range then return end
         
         if (character:FindFirstChild("HumanoidRootPart") ~= nil and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") ~= nil) and OpFacing then
@@ -294,6 +294,9 @@ end
 
 -- // Initiate Script
 
+function checkClothId(template, Id):
+    
+
 modlist = {}
 
 for _, plr in pairs(Players) do
@@ -302,26 +305,28 @@ for _, plr in pairs(Players) do
         repeat wait() until plr.Character:FindFirstChild("Humanoid")
         print("Renew connection:")
         ConnectListeners(plr.Character)
-        if plr.Character:FindFirstChild("Shirt") and plr.Character.Shirt.ShirtTemplate == "http://www.roblox.com/asset/?id=9681905497" then
-            local result = false
-            for _, p in pairs(modlist) do
-                if p == plr.Name then result = true end
-            end
-            if not result then 
-                Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
-                table.insert(modlist, #modlist + 1, plr.Name)
-            end
-        end
+        ------------------------------------------------------------------
+        if plr.Character:FindFirstChild("Shirt") == nil then return end
+        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
+        if f == nil then return end
+        if table.find(modList, plr.Name) == nil then return end
+        Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
+        table.insert(modlist, #modlist + 1, plr.Name)
+        ------------------------------------------------------------------
     end)
     
     local character = plr.Character or plr.CharacterAdded:Wait()
     task.spawn(function()
         repeat wait() until character:FindFirstChild("Humanoid") ~= nil
-        if plr.Character:FindFirstChild("Shirt") and plr.Character.Shirt.ShirtTemplate == "http://www.roblox.com/asset/?id=9681905497" then
-            Library:SendNotification(10, ("Moderator Detected:".. plr.Name))
-            table.insert(modlist, #modlist + 1, plr.Name)
-        end
         ConnectListeners(character)
+        ------------------------------------------------------------------
+        if plr.Character:FindFirstChild("Shirt") == nil then return end
+        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
+        if f == nil then return end
+        if table.find(modList, plr.Name) then return end
+        Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
+        table.insert(modlist, #modlist + 1, plr.Name)
+        ------------------------------------------------------------------
     end)
 end
 
@@ -331,15 +336,16 @@ game:GetService("Players").PlayerAdded:Connect(function(plr)
         ConnectListeners(plr.Character)
     end)
 end)
-
+------------------------------------------------------------------
 for i,v in pairs(workspace.DebrisParts:GetChildren()) do
     if v.Name == "Corpse" then
-        if v:FindFirstChild("Shirt") and v.Shirt.ShirtTemplate == "http://www.roblox.com/asset/?id=9681905497" then
-            Library:SendNotification(10, ("Moderator Detected: (CURRENTLY DEAD)"))
-        end
+        if plr.Character:FindFirstChild("Shirt") == nil then continue end
+        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
+        if f == nil then continue end
+        Library:SendNotification(10, ("Moderator Detected: (CURRENTLY DEAD)"))
     end
 end
-
+------------------------------------------------------------------
 --- LIBRARY
 local Tab = Library:AddTab("fakewoken v3", 1)
 
@@ -824,10 +830,13 @@ LocalPlayer.CharacterAdded:Connect(function(character)
         elseif ch.Name == "Strong Left" and AutoPerfectCast then
             task.wait()
             swing()
-        end
+        
     end)
 end)
 
-
-
+game:GetService("Players").PlayerRemoving:Connect(function(PlayerRemoving)
+    if PlayerRemoving == LocalPlayer then
+	    library:SaveConfig(library.flags["Config List"])
+    end
+end)
 
