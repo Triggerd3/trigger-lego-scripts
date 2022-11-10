@@ -1,6 +1,4 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Triggerd3/trigger-lego-scripts/main/edited-hub.lua", true))()
-Library:LoadConfig(Library.flags["Config List"])
-
 -- NEEDS PING ADJUSTMENT ON AUTO-PARRY
 
 -- // Global Variables
@@ -384,7 +382,7 @@ CFlyToggle:AddBind({
     text = "Fly toggle key",
     key = nil,
     callback = function()
-       library.options["Fly"]:SetState(not library.options["Fly"].state) 
+       Library.options["Fly"]:SetState(not Library.options["Fly"].state) 
     end})
 CFlyToggle:AddSlider({
     text = "Fly Speed",
@@ -410,7 +408,7 @@ SpeedHaxToggle:AddBind({
     text = "Speed hacks toggle key",
     key = nil,
     callback = function()
-       library.options["Speed hacks"]:SetState(not library.options["Speed hacks"].state) 
+       Library.options["Speed hacks"]:SetState(not Library.options["Speed hacks"].state) 
     end})
 SpeedHaxToggle:AddSlider({
     text = "Speed Hack Speed",
@@ -432,7 +430,7 @@ InfJumpToggle:AddBind({
     text = "Infinite jump toggle key",
     key = nil,
     callback = function()
-       library.options["Toggle inf-jump"]:SetState(not library.options["Toggle inf-jump"].state) 
+       Library.options["Toggle inf-jump"]:SetState(not Library.options["Toggle inf-jump"].state) 
     end})
 
 
@@ -452,7 +450,7 @@ NoClipToggle:AddBind({
     text = "Noclip toggle key",
     key = nil,
     callback = function()
-       library.options["Toggle noclip"]:SetState(not library.options["Toggle noclip"].state) 
+       Library.options["Toggle noclip"]:SetState(not Library.options["Toggle noclip"].state) 
     end})
     
 local AntiDrownToggle = MiscSection:AddToggle({
@@ -488,7 +486,7 @@ AnimsToggle:AddBind({
     text = "No Animation Toggle Key",
     key = nil,
     callback = function()
-       library.options["No Animations"]:SetState(not library.options["No Animations"].state) 
+       Library.options["No Animations"]:SetState(not Library.options["No Animations"].state) 
     end})
     
 local RejoinButton = MiscSection:AddButton({
@@ -524,7 +522,7 @@ AutoParryToggle:AddBind({
     text = "Bind Auto-Parry toggle key",
     key = nil,
     callback = function()
-        library.options["Toggle Auto-Parry"]:SetState(not library.options["Toggle Auto-Parry"].state)
+        Library.options["Toggle Auto-Parry"]:SetState(not Library.options["Toggle Auto-Parry"].state)
     end})
     
 local RollonFeintToggle = AutoParrySection:AddToggle({
@@ -539,7 +537,7 @@ RollonFeintToggle:AddBind({
     text = "Bind roll on feint toggle key",
     key = nil,
     callback = function()
-        library.options["Roll on feint"]:SetState(not library.options["Roll on feint"].state)
+        Library.options["Roll on feint"]:SetState(not Library.options["Roll on feint"].state)
     end})
 
 local OppFacingUser = AutoParrySection:AddToggle({
@@ -554,7 +552,7 @@ OppFacingUser:AddBind({
     text = "Bind Opp-Vis toggle key",
     key = nil,
     callback = function()
-        library.options["Toggle Opp-Vis"]:SetState(not library.options["Toggle Opp-Vis"].state)
+        Library.options["Toggle Opp-Vis"]:SetState(not Library.options["Toggle Opp-Vis"].state)
     end})  
 
 local UserFacingOpp = AutoParrySection:AddToggle({
@@ -569,7 +567,7 @@ UserFacingOpp:AddBind({
     text = "Bind Opp-Vis toggle key",
     key = nil,
     callback = function()
-        library.options["Toggle User-Vis"]:SetState(not library.options["Toggle User-Vis"].state)
+        Library.options["Toggle User-Vis"]:SetState(not Library.options["Toggle User-Vis"].state)
     end})   
 
 
@@ -721,7 +719,7 @@ function sFLY()
 		task.spawn(function()
 			repeat wait()
 				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
-					SPEED = library.flags["Fly Speed"]
+					SPEED = Library.flags["Fly Speed"]
 				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
 					SPEED = 0
 				end
@@ -833,6 +831,9 @@ end)
 
 game:GetService("Players").PlayerRemoving:Connect(function(PlayerRemoving)
     if PlayerRemoving == LocalPlayer then
-	    library:SaveConfig(library.flags["Config List"])
+	    Library:SaveConfig(Library.flags["Config List"])
     end
 end)
+
+Library:LoadConfig(Library:GetConfigs()[2])
+library.options["Config List"]:SetValue(Library:GetConfigs()[2])
