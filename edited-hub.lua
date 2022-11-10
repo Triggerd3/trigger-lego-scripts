@@ -70,6 +70,7 @@
 	end
 
 	function library:Unload()
+		library:SaveConfig(library.flags["Config List"])
 		inputService.MouseIconEnabled = self.mousestate
 		for _, c in next, self.connections do
 			c:Disconnect()
@@ -2706,7 +2707,7 @@
 	library.SettingsMain = library.SettingsColumn:AddSection"Main"
 	library.SettingsMain:AddButton({text = "Unload Cheat", nomouse = true, callback = function()
 		library:Unload()
-		getgenv().uwuware = nil
+		getgenv().TriggerHub = nil
 	end})
 	library.SettingsMain:AddBind({text = "Panic Key", callback = library.options["Unload Cheat"].callback})
 
@@ -2843,7 +2844,7 @@
 			Position = UDim2.new(0, 4, 0, 0),
 			Size = UDim2.new(0, 70, 0, 16),
 			BackgroundTransparency = 1,
-			Text = "uwuware",
+			Text = "TriggerHub",
 			Font = Enum.Font.Gotham,
 			TextColor3 = Color3.fromRGB(255, 65, 65),
 			TextSize = 16,
