@@ -51,8 +51,8 @@ getgenv().AutoParrylist = {
     
     -- MEDIUM MOVESET
         -- SWORD (SWORD)
-    ["rbxassetid://8698443433"] = {"Sword1", 0.25, "Parry", "Close", "Swing"},
-    ["rbxassetid://8699014368"] = {"Sword2", 0.25, "Parry", "Close", "Swing"},
+    ["rbxassetid://8698443433"] = {"Sword1", 0.2, "Parry", "Close", "Swing"},
+    ["rbxassetid://8699014368"] = {"Sword2", 0.2, "Parry", "Close", "Swing"},
     ["rbxassetid://8787495611"] = {"Critical", 0.5, "Parry", "Ranged", "Swing"},
     ["rbxassetid://8779280417"] = {"SwordRun", 0.2, "Parry", "Ranged", "Swing"},
     ["rbxassetid://9112351440"] = {"Aerial", 0.2, "Parry", "Far", "Not"},
@@ -69,7 +69,7 @@ getgenv().AutoParrylist = {
     ["rbxassetid://11404159898"] = {"SPEAR1", 0.2, "Parry", "Close", "Swing"},
     ["rbxassetid://11404162476"] = {"SPEAR2", 0.2, "Parry", "Close", "Swing"},
         -- KATANA (KATANA)
-    ["rbxassetid://9892586559"] = {"KatanaSpecial", 0.4, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://9892586559"] = {"KatanaSpecial", 0.35, "Parry", "Ranged", "Swing"},
     
     -- HEAVY MOVESET
         -- HEAVY AXE (BATTLE AXE)
