@@ -304,7 +304,7 @@ for _, plr in pairs(Players) do
         if plr.Character:FindFirstChild("Shirt") == nil then return end
         f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
         if f == nil then return end
-        if table.find(modList, plr.Name) == nil then return end
+        if table.find(modlist, plr.Name) == nil then return end
         Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
         table.insert(modlist, #modlist + 1, plr.Name)
         ------------------------------------------------------------------
@@ -318,7 +318,7 @@ for _, plr in pairs(Players) do
         if plr.Character:FindFirstChild("Shirt") == nil then return end
         f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
         if f == nil then return end
-        if table.find(modList, plr.Name) then return end
+        if table.find(modlist, plr.Name) then return end
         Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
         table.insert(modlist, #modlist + 1, plr.Name)
         ------------------------------------------------------------------
