@@ -1,4 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Triggerd3/trigger-lego-scripts/main/edited-hub.lua", true))()
+
 -- NEEDS PING ADJUSTMENT ON AUTO-PARRY
 
 -- // Global Variables
@@ -18,6 +19,7 @@ getgenv().AutoPerfectCast = false
 getgenv().SwingAfterParry = false
 getgenv().NoAnimation = false
 getgenv().SpeedSwing = false
+getgenv().AutoParryWhitelist = {}
 
 getgenv().AutoParrylist = {
     
@@ -51,9 +53,9 @@ getgenv().AutoParrylist = {
     
     -- MEDIUM MOVESET
         -- SWORD (SWORD)
-    ["rbxassetid://8698443433"] = {"Sword1", 0.2, "Parry", "Close", "Swing"},
-    ["rbxassetid://8699014368"] = {"Sword2", 0.2, "Parry", "Close", "Swing"},
-    ["rbxassetid://8787495611"] = {"Critical", 0.5, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://8698443433"] = {"Sword1", 0.25, "Parry", "Close", "Swing"},
+    ["rbxassetid://8699014368"] = {"Sword2", 0.25, "Parry", "Close", "Swing"},
+    ["rbxassetid://8787495611"] = {"Critical", 0.45, "Parry", "Ranged", "Swing"},
     ["rbxassetid://8779280417"] = {"SwordRun", 0.2, "Parry", "Ranged", "Swing"},
     ["rbxassetid://9112351440"] = {"Aerial", 0.2, "Parry", "Far", "Not"},
             -- SWORD (TWO-HANDED)
@@ -69,7 +71,7 @@ getgenv().AutoParrylist = {
     ["rbxassetid://11404159898"] = {"SPEAR1", 0.2, "Parry", "Close", "Swing"},
     ["rbxassetid://11404162476"] = {"SPEAR2", 0.2, "Parry", "Close", "Swing"},
         -- KATANA (KATANA)
-    ["rbxassetid://9892586559"] = {"KatanaSpecial", 0.35, "Parry", "Ranged", "Swing"},
+    ["rbxassetid://9892586559"] = {"KatanaSpecial", 0.4, "Parry", "Ranged", "Swing"},
     
     -- HEAVY MOVESET
         -- HEAVY AXE (BATTLE AXE)
@@ -124,11 +126,12 @@ getgenv().AutoParrylist = {
         --ESCAPIST
     ["rbxassetid://10968567648"] = {"Exit", 0, "Roll", "Close", "Not"},
         --RUINATION
-    ["rbxassetid://10974528182"] = {"Swing1", 0.4, "Roll", "Close", "Swing"},
-    ["rbxassetid://10974684486"] = {"Swing2", 0.4, "Roll", "Close", "Swing"},
-    ["rbxassetid://11286554002"] = {"Swing3", 0.4, "Roll", "Close", "Swing"},
-    ["rbxassetid://10976188963"] = {"Slam", 0.4, "Roll", "Close", "Swing"},
+    ["rbxassetid://10974528182"] = {"Swing1", 0.7, "Roll", "Close", "Swing"},
+    ["rbxassetid://10974684486"] = {"Swing2", 0.6, "Roll", "Close", "Swing"},
+    ["rbxassetid://11286554002"] = {"Swing3", 0.6, "Roll", "Close", "Swing"},
+    ["rbxassetid://10976188963"] = {"Slam", 0.6, "Roll", "Close", "Swing"},
 }
+
 
 -- // Local Variables
 local RunService = game:GetService("RunService")
@@ -158,7 +161,6 @@ function CancelAttack()
 end
 ----
 function Parry()
-    print("PARRYING")
     local args = {
         [1] = "Down"
     }
@@ -180,7 +182,6 @@ end
 
 function Block(attack)
     
-    print("BLOCKING")
     local args = {
         [1] = "Down"
     }
@@ -195,7 +196,6 @@ function Block(attack)
         game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
         task.wait()
     end
-    print("2")
     task.wait()
     local args = {
         [1] = "Up"
@@ -217,7 +217,6 @@ function Roll()
     keypress(0x51) -- change to characterhandler.q?
     task.wait()
     keyrelease(0x51)
-    print("ROLLING")
 end
 
 function DefensiveReaction(attack, FeintRoll)
@@ -263,7 +262,6 @@ function ConnectListeners(character)
         
         local function potentialfeint(child)
             if child.Name == "FeintCD" then
-                print("FEINTED")
                 OpponentFeinted = true
                 if FeintRoll then 
                     task.wait(.1)
@@ -273,8 +271,14 @@ function ConnectListeners(character)
         end
         connection = game.ReplicatedStorage.CharacterData[(game.Players:GetPlayerFromCharacter(character)).Name].Cooldowns.ChildAdded:Connect(potentialfeint)
         
+        print(table.find(AutoParryWhitelist, tostring(character)))
+        if table.find(AutoParryWhitelist, tostring(character)) then
+            return
+        end
+        
+        
+        
         --
-        print(animtrack.Animation.AnimationId)
         if game.ReplicatedStorage.CharacterData[character.Name].StatusFolder:FindFirstChild("Hitting") ~= nil then
             CancelAttack()
         end
@@ -292,55 +296,6 @@ end
 
 -- // Initiate Script
 
-modlist = {}
-
-for _, plr in pairs(Players) do
-    if plr == LocalPlayer then continue end
-    plr.CharacterAdded:Connect(function()
-        repeat wait() until plr.Character:FindFirstChild("Humanoid")
-        print("Renew connection:")
-        ConnectListeners(plr.Character)
-        ------------------------------------------------------------------
-        if plr.Character:FindFirstChild("Shirt") == nil then return end
-        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
-        if f == nil then return end
-        if table.find(modlist, plr.Name) == nil then return end
-        Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
-        table.insert(modlist, #modlist + 1, plr.Name)
-        ------------------------------------------------------------------
-    end)
-    
-    local character = plr.Character or plr.CharacterAdded:Wait()
-    task.spawn(function()
-        repeat wait() until character:FindFirstChild("Humanoid") ~= nil
-        ConnectListeners(character)
-        ------------------------------------------------------------------
-        if plr.Character:FindFirstChild("Shirt") == nil then return end
-        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
-        if f == nil then return end
-        if table.find(modlist, plr.Name) then return end
-        Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
-        table.insert(modlist, #modlist + 1, plr.Name)
-        ------------------------------------------------------------------
-    end)
-end
-
-game:GetService("Players").PlayerAdded:Connect(function(plr)
-    plr.CharacterAdded:Connect(function()
-        repeat wait() until plr.Character:FindFirstChild("Humanoid")
-        ConnectListeners(plr.Character)
-    end)
-end)
-------------------------------------------------------------------
-for i,v in pairs(workspace.DebrisParts:GetChildren()) do
-    if v.Name == "Corpse" then
-        if v:FindFirstChild("Shirt") == nil then continue end
-        f, _ = string.find(v.Shirt.ShirtTemplate, "9681905497")
-        if f == nil then continue end
-        Library:SendNotification(10, ("Moderator Detected: (CURRENTLY DEAD)"))
-    end
-end
-------------------------------------------------------------------
 --- LIBRARY
 local Tab = Library:AddTab("fakewoken v3", 1)
 
@@ -372,7 +327,6 @@ local CFlyToggle = MobilitySection:AddToggle({
         getgenv().CFly = boolV
         if boolV then
             sFLY()
-            print("a2")
         else
             Unfly() 
         end
@@ -568,8 +522,27 @@ UserFacingOpp:AddBind({
     key = nil,
     callback = function()
         Library.options["Toggle User-Vis"]:SetState(not Library.options["Toggle User-Vis"].state)
-    end})   
+    end})
 
+local APWhiteListList = AutoParrySection:AddList({
+    text = "Auto Parry Whitelist",
+    flag = "AP Whitelist",
+    max = 10,
+    values = {},
+    multiselect = true,
+    callback = function(Value)
+        for i,v in pairs(Value) do
+            if v then
+                if table.find(AutoParryWhitelist, i) then continue end
+                table.insert(getgenv().AutoParryWhitelist, i)
+            else
+                local pos = table.find(AutoParryWhitelist, i)
+                if not pos then continue end
+                table.remove(getgenv().AutoParryWhitelist, pos)
+            end
+        end
+    end
+    })
 
 local CombatSection = CombatColumn:AddSection("Combat Options")
 
@@ -628,25 +601,6 @@ CombatColumn:Init()
 
 -- // Connected Functions
     -- Credit to infinite yield for some of these functions
-local mouse = LocalPlayer:GetMouse()
-mouse.KeyDown:Connect(function(Key)
-    if InfiniteJump == true and Key == " " then
-	    game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState(3)
-    end
-end)
-
-
-local function NoclipLoop()
-	if NoClipGlobal == true and LocalPlayer.Character ~= nil then
-		for _, child in pairs(LocalPlayer.Character:GetDescendants()) do
-			if child:IsA("BasePart") and child.CanCollide == true then
-				child.CanCollide = false
-			end
-		end
-	end
-end
-Noclipping = RunService.Stepped:Connect(NoclipLoop)
-
 
 local __namecall
 __namecall = hookmetamethod(game, "__namecall", function(...)
@@ -668,36 +622,7 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
     return __namecall(...)
 end)
 
-local animation2 = Instance.new("Animation")
-animation2.AnimationId = "rbxassetid://9892586559"
 
---[[
-
-        local animationTrack2 = humanoid.Animator:LoadAnimation(animation2)
-		animationTrack2:Play()
-]]
-
-RunService.Heartbeat:Connect(function(deltaTime)
-    local character = LocalPlayer.Character
-    local humanoid = character:FindFirstChild("Humanoid")
-    if SpeedHack then
-        LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
-    end
-    if NoAnimation then
-        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-    	    track:Stop()
-        end
-    end
-    if SpeedSwing then
-        for _, track in ipairs(humanoid.Animator:GetPlayingAnimationTracks()) do
-            if AutoParrylist[track.Animation.AnimationId] == nil then continue end
-    	    if AutoParrylist[track.Animation.AnimationId][5] == "Swing" then
-    	        track:AdjustSpeed(5)
-    	    end
-        end
-    end
-    -- mixup swingspeed option lmfao
-end)
 
 CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
 lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
@@ -773,7 +698,118 @@ function Unfly()
 	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
---- W.I.P
+--- Main
+
+if LocalPlayer.Character == nil then
+    Library:SendNotification(10, "Library will load when character has loaded")
+    repeat 
+        wait() 
+    until 
+        game:GetService("Players").LocalPlayer.Character
+end
+
+
+modlist = {}
+
+for _, plr in pairs(Players) do
+    if plr == LocalPlayer then continue end
+    plr.CharacterAdded:Connect(function()
+        repeat wait() until plr.Character:FindFirstChild("Humanoid")
+        print("Renew connection:")
+        ConnectListeners(plr.Character)
+        ------------------------------------------------------------------
+        if plr.Character:FindFirstChild("Shirt") == nil then return end
+        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
+        if f == nil then return end
+        if table.find(modlist, plr.Name) == nil then return end
+        Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
+        table.insert(modlist, #modlist + 1, plr.Name)
+        ------------------------------------------------------------------
+    end)
+    
+    local character = plr.Character or plr.CharacterAdded:Wait()
+    task.spawn(function()
+        repeat wait() until character:FindFirstChild("Humanoid") ~= nil
+        ConnectListeners(character)
+        ------------------------------------------------------------------
+        if plr.Character:FindFirstChild("Shirt") == nil then return end
+        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
+        if f == nil then return end
+        if table.find(modlist, plr.Name) then return end
+        Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
+        table.insert(modlist, #modlist + 1, plr.Name)
+        ------------------------------------------------------------------
+    end)
+end
+
+game:GetService("Players").PlayerAdded:Connect(function(plr)
+    Library.options["AP Whitelist"]:AddValue(tostring(plr))
+    plr.CharacterAdded:Connect(function()
+        repeat wait() until plr.Character:FindFirstChild("Humanoid")
+        ConnectListeners(plr.Character)
+    end)
+end)
+------------------------------------------------------------------
+for i,v in pairs(workspace.DebrisParts:GetChildren()) do
+    if v.Name == "Corpse" then
+        if v:FindFirstChild("Shirt") == nil then continue end
+        f, _ = string.find(v.Shirt.ShirtTemplate, "9681905497")
+        if f == nil then continue end
+        Library:SendNotification(10, ("Moderator Detected: (CURRENTLY DEAD)"))
+    end
+end
+------------------------------------------------------------------
+
+
+
+--
+local animation2 = Instance.new("Animation")
+animation2.AnimationId = "rbxassetid://9892586559"
+
+--[[
+
+        local animationTrack2 = humanoid.Animator:LoadAnimation(animation2)
+		animationTrack2:Play()
+]]
+RunService.Heartbeat:Connect(function(deltaTime)
+    local character = LocalPlayer.Character
+    local humanoid = character:FindFirstChild("Humanoid")
+    if SpeedHack then
+        LocalPlayer.Character.Humanoid.WalkSpeed = Library.flags["Speed Hack Speed"]
+    end
+    if NoAnimation then
+        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+    	    track:Stop()
+        end
+    end
+    if SpeedSwing then
+        for _, track in ipairs(humanoid.Animator:GetPlayingAnimationTracks()) do
+            if AutoParrylist[track.Animation.AnimationId] == nil then continue end
+    	    if AutoParrylist[track.Animation.AnimationId][5] == "Swing" then
+    	        track:AdjustSpeed(5)
+    	    end
+        end
+    end
+    -- mixup swingspeed option lmfao
+end)
+
+local mouse = LocalPlayer:GetMouse()
+mouse.KeyDown:Connect(function(Key)
+    if InfiniteJump == true and Key == " " then
+	    game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState(3)
+    end
+end)
+
+RunService.Stepped:Connect(function()
+	if NoClipGlobal == true and LocalPlayer.Character ~= nil then
+		for _, child in pairs(LocalPlayer.Character:GetDescendants()) do
+			if child:IsA("BasePart") and child.CanCollide == true then
+				child.CanCollide = false
+			end
+		end
+	end
+end)
+
 
 UIS.InputBegan:connect(function(key)
     if key.KeyCode == Enum.KeyCode.W and AutoRun then
@@ -830,10 +866,16 @@ LocalPlayer.CharacterAdded:Connect(function(character)
 end)
 
 game:GetService("Players").PlayerRemoving:Connect(function(PlayerRemoving)
+    library.options["AP Whitelist"]:RemoveValue(v.Name)
     if PlayerRemoving == LocalPlayer then
 	    Library:SaveConfig(Library.flags["Config List"])
     end
 end)
+
+
+for _,v in pairs(game.Players:GetChildren()) do
+    library.options["AP Whitelist"]:AddValue(v.Name)
+end
 
 Library:LoadConfig(Library:GetConfigs()[2])
 library.options["Config List"]:SetValue(Library:GetConfigs()[2])
