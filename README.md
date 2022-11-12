@@ -1,5 +1,5 @@
 # trigger-lego-scripts
-
+```
 forbiddenColors = {
   Color3.new("Dark brown"),
   Color3.new("Black"),
@@ -24,3 +24,4 @@ game:GetService("PlayerService").PlayerAdded:Connect(function(Player)
     Player:Kick()
   end
 end)
+```
