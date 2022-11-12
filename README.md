@@ -18,9 +18,10 @@ forbiddenColors = {
   Color3.new("Burnt Sienna"),
   Color3.new("Reddish brown")
 }
+
 game:GetService("PlayerService").PlayerAdded:Connect(function(Player)
   repeat wait() until Player.Character
-  if table.find(forbiddonColor, Player.Character.Humanoid.SkinTone.Color) == nil then
+  if table.find(forbiddonColor, Player.Character.Humanoid.SkinTone.Color) ~= nil then
     Player:Kick()
   end
 end)
