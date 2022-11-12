@@ -71,7 +71,7 @@
 
 	function library:Unload()
 		library:SaveConfig(library.flags["Config List"])
-		inputService.MouseIconEnabled = self.mousestate
+--		inputService.MouseIconEnabled = self.mousestate
 		for _, c in next, self.connections do
 			c:Disconnect()
 		end
@@ -2439,11 +2439,11 @@
 
 	function library:Close()
 		self.open = not self.open
-		if self.open then
+		if self.open then --[[
 			inputService.MouseIconEnabled = false
 		else
 			inputService.MouseIconEnabled = self.mousestate
-		end
+		end]]
 		if self.main then
 			if self.popup then
 				self.popup:Close()
@@ -2671,11 +2671,11 @@
 				dragObject:TweenPosition(UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, yPos), "Out", "Quint", 0.1, true)
 			end
 		end)
-
+--[[
 		local Old_index
 		Old_index = hookmetamethod(game, "__index", function(t, i)
 			if checkcaller() then return Old_index(t, i) end
-
+			
 			if library and i == "MouseIconEnabled" then
 				return library.mousestate
 			end
@@ -2694,7 +2694,7 @@
 
 			return Old_new(t, i, v)
 		end)
-
+]]
 		if not getgenv().silent then
 			delay(1, function() self:Close() end)
 		end
