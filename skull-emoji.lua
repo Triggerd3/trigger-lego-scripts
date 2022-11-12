@@ -866,7 +866,7 @@ LocalPlayer.CharacterAdded:Connect(function(character)
 end)
 
 game:GetService("Players").PlayerRemoving:Connect(function(PlayerRemoving)
-    library.options["AP Whitelist"]:RemoveValue(v.Name)
+    library.options["AP Whitelist"]:RemoveValue(PlayerRemoving.Name)
     if PlayerRemoving == LocalPlayer then
 	    Library:SaveConfig(Library.flags["Config List"])
     end
