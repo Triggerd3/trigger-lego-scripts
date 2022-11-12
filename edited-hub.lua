@@ -2449,8 +2449,8 @@
 				self.popup:Close()
 			end
 			self.main.Visible = self.open
-			self.cursor.Visible  = self.open
-			self.cursor1.Visible  = self.open
+--			self.cursor.Visible  = self.open
+--			self.cursor1.Visible  = self.open
 		end
 	end
 
@@ -2527,7 +2527,7 @@
 			BackgroundTransparency = 1,
 			Parent = self.main
 		})
-
+--[[
 		self.cursor = self:Create("Triangle", {
 			Color = Color3.fromRGB(180, 180, 180),
 			Transparency = 0.6,
@@ -2536,7 +2536,7 @@
 			Color = Color3.fromRGB(240, 240, 240),
 			Transparency = 0.6,
 		})
-
+]]
 		self.tooltip = self:Create("TextLabel", {
 			ZIndex = 2,
 			BackgroundTransparency = 1,
@@ -2651,7 +2651,7 @@
 			if not self.open then return end
 			
 			if input.UserInputType.Name == "MouseMovement" then
-				if self.cursor then
+--[[				if self.cursor then
 					local mouse = inputService:GetMouseLocation()
 					local MousePos = Vector2.new(mouse.X, mouse.Y)
 					self.cursor.PointA = MousePos
@@ -2660,7 +2660,7 @@
 					self.cursor1.PointA = MousePos
 					self.cursor1.PointB = MousePos + Vector2.new(11, 11)
 					self.cursor1.PointC = MousePos + Vector2.new(11, 11)
-				end
+				end]]
 				if self.slider then
 					self.slider:SetValue(self.slider.min + ((input.Position.X - self.slider.slider.AbsolutePosition.X) / self.slider.slider.AbsoluteSize.X) * (self.slider.max - self.slider.min))
 				end
