@@ -11,7 +11,7 @@
 		getgenv().library:Unload()
 	end
 
-	local library = {design = getgenv().design == "kali" and "kali" or "TriggerHub", tabs = {}, draggable = true, flags = {}, title = "TriggerHub", open = false, mousestate = inputService.MouseIconEnabled, popup = nil, instances = {}, connections = {}, options = {}, notifications = {}, tabSize = 0, theme = {}, foldername = "triggerhub_configs", fileext = ".txt"}
+	local library = {design = getgenv().design == "kali" and "kali" or "TriggerHub", tabs = {}, draggable = true, flags = {}, title = "TriggerHub", open = false, popup = nil, instances = {}, connections = {}, options = {}, notifications = {}, tabSize = 0, theme = {}, foldername = "triggerhub_configs", fileext = ".txt"}
 	getgenv().library = library
 
 	--Locals
@@ -71,7 +71,6 @@
 
 	function library:Unload()
 		library:SaveConfig(library.flags["Config List"])
---		inputService.MouseIconEnabled = self.mousestate
 		for _, c in next, self.connections do
 			c:Disconnect()
 		end
@@ -2439,11 +2438,6 @@
 
 	function library:Close()
 		self.open = not self.open
-		--[[if self.open then 
-			inputService.MouseIconEnabled = false
-		else
-			inputService.MouseIconEnabled = self.mousestate
-		end]]
 		if self.main then
 			if self.popup then
 				self.popup:Close()
@@ -2651,16 +2645,6 @@
 			if not self.open then return end
 			
 			if input.UserInputType.Name == "MouseMovement" then
---[[				if self.cursor then
-					local mouse = inputService:GetMouseLocation()
-					local MousePos = Vector2.new(mouse.X, mouse.Y)
-					self.cursor.PointA = MousePos
-					self.cursor.PointB = MousePos + Vector2.new(12, 12)
-					self.cursor.PointC = MousePos + Vector2.new(12, 12)
-					self.cursor1.PointA = MousePos
-					self.cursor1.PointB = MousePos + Vector2.new(11, 11)
-					self.cursor1.PointC = MousePos + Vector2.new(11, 11)
-				end]]
 				if self.slider then
 					self.slider:SetValue(self.slider.min + ((input.Position.X - self.slider.slider.AbsolutePosition.X) / self.slider.slider.AbsoluteSize.X) * (self.slider.max - self.slider.min))
 				end
@@ -2671,30 +2655,6 @@
 				dragObject:TweenPosition(UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, yPos), "Out", "Quint", 0.1, true)
 			end
 		end)
---[[
-		local Old_index
-		Old_index = hookmetamethod(game, "__index", function(t, i)
-			if checkcaller() then return Old_index(t, i) end
-			
-			if library and i == "MouseIconEnabled" then
-				return library.mousestate
-			end
-
-			return Old_index(t, i)
-		end)
-
-		local Old_new
-		Old_new = hookmetamethod(game, "__newindex", function(t, i, v)
-			if checkcaller() then return Old_new(t, i, v) end
-
-			if library and i == "MouseIconEnabled" then
-				library.mousestate = v
-				if library.open then return end
-			end
-
-			return Old_new(t, i, v)
-		end)
-]]
 		if not getgenv().silent then
 			delay(1, function() self:Close() end)
 		end
