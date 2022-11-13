@@ -407,7 +407,8 @@ MobilitySection:AddToggle({
         getgenv().AutoRun = boolV
     end
 })
-MobilitySection:AddToggle({
+
+local FlyToggle = MobilitySection:AddToggle({
     text = "Fly",
     state = false,
     position = 2,
@@ -420,19 +421,21 @@ MobilitySection:AddToggle({
             Unfly() 
         end
     end
-}):AddBind({
+})
+FlyToggle:AddBind({
     text = "Fly toggle key",
     key = nil,
     callback = function()
        library.options["Fly"]:SetState(not library.options["Fly"].state) 
     end
-}):AddSlider({
+})
+FlyToggle:AddSlider({
     text = "Fly Speed",
     flag = "Fly Speed",
     min = 1,
     max = 50,})
 
-MobilitySection:AddToggle({
+local SpeedHacksToggle = MobilitySection:AddToggle({
     text = "Speed hacks",
     state = false,
     position = 1,
@@ -443,20 +446,22 @@ MobilitySection:AddToggle({
             LocalPlayer.Character.Humanoid.WalkSpeed = 15
         end
     end
-}):AddBind({
+})
+SpeedHacksToggle:AddBind({
     text = "Speed hacks toggle key",
     key = nil,
     callback = function()
         library.options["Speed hacks"]:SetState(not library.options["Speed hacks"].state) 
     end
-}):AddSlider({
+})
+SpeedHacksToggle:AddSlider({
     text = "Speed Hack Speed",
     flag = "Speed Hack Speed",
     min = 1,
     max = 50,
 })
 
-MobilitySection:AddToggle({
+local InfJumpToggle = MobilitySection:AddToggle({
     text = "Toggle inf-jump",
     state = false,
     position = 2,
@@ -464,7 +469,8 @@ MobilitySection:AddToggle({
     callback = function(boolV)
         getgenv().InfiniteJump = boolV
     end
-}):AddBind({
+})
+InfJumpToggle:AddBind({
     text = "Infinite jump toggle key",
     key = nil,
     callback = function()
@@ -475,7 +481,7 @@ MobilitySection:AddToggle({
 --- MISC
 local MiscSection = Column1:AddSection("Misc")
 
-MiscSection:AddToggle({
+local NoClipToggle = MiscSection:AddToggle({
     text = "Toggle noclip",
     state = false,
     position = 1,
@@ -483,7 +489,8 @@ MiscSection:AddToggle({
     callback = function(boolV)
         getgenv().NoClipGlobal = boolV
     end
-}):AddBind({
+})
+NoClipToggle:AddBind({
     text = "Noclip toggle key",
     key = nil,
     callback = function()
@@ -513,7 +520,7 @@ MiscSection:AddToggle({
     end
 })
 
-MiscSection:AddToggle({
+local NoAnimationsToggle = MiscSection:AddToggle({
     text = "No Animations",
     state = false,
     position = 1,
@@ -521,7 +528,8 @@ MiscSection:AddToggle({
     callback = function(boolV)
         getgenv().NoAnimation = boolV
     end
-}):AddBind({
+})
+NoAnimationsToggle:AddBind({
     text = "No Animation Toggle Key",
     key = nil,
     callback = function()
@@ -549,7 +557,7 @@ MiscSection:AddButton({
 local CombatColumn = Tab:AddColumn()
 local AutoParrySection = CombatColumn:AddSection("Auto-Parry")
 
-AutoParrySection:AddToggle({
+local AutoParryToggle = AutoParrySection:AddToggle({
     text = "Toggle Auto-Parry", 
     state = false,
     position = "1",
@@ -557,7 +565,8 @@ AutoParrySection:AddToggle({
     callback = function(boolV)
         getgenv().AutoParry = boolV
     end
-}):AddBind({
+})
+AutoParryToggle:AddBind({
     text = "Bind Auto-Parry toggle key",
     key = nil,
     callback = function()
@@ -565,7 +574,7 @@ AutoParrySection:AddToggle({
     end
 })
     
-AutoParrySection:AddToggle({
+local RollonFeintToggle = AutoParrySection:AddToggle({
     text = "Roll on feint", 
     state = false,
     position = "2",
@@ -573,14 +582,15 @@ AutoParrySection:AddToggle({
     callback = function(boolV)
         getgenv().FeintRoll = boolV
     end
-}):AddBind({
+})
+RollonFeintToggle:AddBind({
     text = "Bind roll on feint toggle key",
     key = nil,
     callback = function()
         library.options["Roll on feint"]:SetState(not library.options["Roll on feint"].state)
     end})
 
-AutoParrySection:AddToggle({
+local OppVisToggle = AutoParrySection:AddToggle({
     text = "Toggle Opp-Vis", 
     state = false,
     position = "3",
@@ -588,14 +598,15 @@ AutoParrySection:AddToggle({
     callback = function(boolV) 
         getgenv().OpFacing = boolV
     end
-}):AddBind({
+})
+OppVisToggle:AddBind({
     text = "Bind Opp-Vis toggle key",
     key = nil,
     callback = function()
         library.options["Toggle Opp-Vis"]:SetState(not library.options["Toggle Opp-Vis"].state)
     end})  
 
-AutoParrySection:AddToggle({
+local UsVisToggle = AutoParrySection:AddToggle({
     text = "Toggle User-Vis", 
     state = false,
     position = "4",
@@ -603,7 +614,8 @@ AutoParrySection:AddToggle({
     callback = function(boolV) 
         getgenv().FacingOp = boolV
     end
-}):AddBind({
+})
+UsVisToggle:AddBind({
     text = "Bind Opp-Vis toggle key",
     key = nil,
     callback = function()
@@ -663,6 +675,8 @@ CombatSection:AddToggle({
     end
 })
 
+library:Init()
+
 Tab:Init()
 
 Column1:Init()
@@ -672,8 +686,8 @@ CombatColumn:Init()
 -- // Connected Functions
 
 --- Main
-for _, v in next, library.options["Ap Whitelist"] do
-    library.options["Ap Whitelist"]:RemoveValue(v)
+for _, v in next, library.options["AP Whitelist"] do
+    library.options["AP Whitelist"]:RemoveValue(v)
 end
 
 if LocalPlayer.Character == nil then
