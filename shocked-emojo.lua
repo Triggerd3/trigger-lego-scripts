@@ -11,9 +11,9 @@ for Name,ID in next, GameList do
 		GameTitle = Name
 	end
 end
+--[[
 if GameTitle == "Fakewoken 3" then
 	library:Init()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Triggerd3/trigger-lego-scripts/main/Games/squidward-emoji.lua", true))
 end
---if GameTitle == "Fakewoken 3" then
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Triggerd3/trigger-lego-scripts/main/Games/squidward-emoji.lua", true))
---end
+]]--
