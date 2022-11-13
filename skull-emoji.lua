@@ -3,9 +3,6 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Trigg
 -- NEEDS PING ADJUSTMENT ON AUTO-PARRY
 
 -- // Global Variables
-
---  - mod shirt
-
 getgenv().AutoParry = false
 getgenv().OpFacing = false
 getgenv().FacingOp = false
@@ -91,7 +88,6 @@ getgenv().AutoParrylist = {
         -- ATTUNEMENT-LESS
     ["rbxassetid://9912709174"] = {"StrongLeft", 0.4, "Parry", "Ranged", "Swing"},
     
-    
     --- MOBS
         -- MUDSKIPPER
     ["rbxassetid://10109623939"] = {"Combo1", .2, "Parry", "Close", "Swing"},
@@ -112,7 +108,7 @@ getgenv().AutoParrylist = {
     ["rbxassetid://9995234248"] = {"Swoop", .4, "Roll", "Ranged", "Swing"},
         --MONKE
     ["rbxassetid://9145238578"] = {"Stomp", 0, "Parry", "MONKE", "Swing"},
-    ["rbxassetid://9145941681"] = {"Kick", 0, "Roll", "MONKE", "Swing"},
+    ["rbxassetid://9145941681"] = {"Kick", 0.7, "Roll", "MONKE", "Swing"},
     ["rbxassetid://9147807267"] = {"Grab", 0.2, "Parry", "MONKE", "Swing"},
     ["rbxassetid://9137450354"] = {"TripleStomp", 0.6, "Parry", "MONKE", "Swing"},
     ["rbxassetid://9157621952"] = {"Throw", 0.6, "Roll", "MONKE", "Swing"},
@@ -133,51 +129,171 @@ getgenv().AutoParrylist = {
 }
 
 
--- // Local Variables
-local RunService = game:GetService("RunService")
-local UIS = game:GetService("UserInputService")
-local PlayerService = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CheckSpeed = ReplicatedStorage.Events.CheckSpeed
+local GameTitle = ""
+local GameList = {
+	["Fakewoken 3"] = 8350658333
+}
+for Name,ID in next, GameList do
+	if game.GameId == ID then
+		GameTitle = Name
+	elseif game.PlaceId == ID then
+		GameTitle = Name
+	end
+end
+
+
+
+
+-- // Local Variables
+local PlayerService = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+
 local Players = PlayerService:GetChildren()
 local LocalPlayer = PlayerService.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local Camera = workspace.CurrentCamera
+local CheckSpeed = ReplicatedStorage.Events.CheckSpeed
 
 local OpponentFeinted = false
 
 -- // Functions
+local function mouse1click(delay) spawn(function() mouse1press() wait(delay or 0.1) mouse1release() end) end
+local function mouse2click(delay) spawn(function() keypress(0x02) wait(delay or 0.1) keprelease(0x02) end) end
+local function keytap(key, delay) spawn(function() keypress(key) wait(delay or 0.1) keyrelease(key) end) end
+
+
+
+
+local __namecall
+__namecall = hookmetamethod(game, "__namecall", function(...)
+    -- // Vars
+    local args = {...}
+    local self = args[1]
+    local method = getnamecallmethod()
+
+    -- // Check if it is the remote
+    if (self == CheckSpeed and method == "FireServer") then
+        if SpeedHack then   
+            return Library.flags["Speed Hack Speed"],Library.flags["Speed Hack Speed"]
+        elseif CFly then
+            return Library.flags["Fly Speed"],Library.flags["Fly Speed"]
+        end
+    end
+
+    -- // Return default
+    return __namecall(...)
+end)
+
+CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+SPEED2 = 1
+function sFLY()
+    repeat wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    local hrp = LocalPlayer.Character.HumanoidRootPart
+   
+	local SPEED = 0
+    local function fly2()
+        
+		local BV = Instance.new('BodyVelocity')
+		BV.Name = "RollVelocity"
+        BV.P = math.huge
+		BV.Parent = hrp
+		BV.Velocity = Vector3.new(0,0,0)
+		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+		
+		task.spawn(function()
+			repeat wait()
+				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+					SPEED = Library.flags["Fly Speed"]
+				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+					SPEED = 0
+				end
+				if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+				elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+				else
+					BV.velocity = Vector3.new(0, 0, 0)
+				end
+			until not CFly
+			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			SPEED = 0
+			BV:Destroy()
+		end)
+    end
+    if UIS:IsKeyDown("W") then CONTROL.F = (SPEED2)
+    elseif UIS:IsKeyDown("S") then CONTROL.B = - (SPEED2)
+    elseif UIS:IsKeyDown("A") then CONTROL.L = - (SPEED2)
+    elseif UIS:IsKeyDown("D") then CONTROL.R = (SPEED2) end
+    flyKeyDown = Mouse.KeyDown:Connect(function(KEY)
+		if KEY:lower() == 'w' then
+			CONTROL.F = (SPEED2)
+		elseif KEY:lower() == 's' then
+			CONTROL.B = - (SPEED2)
+		elseif KEY:lower() == 'a' then
+			CONTROL.L = - (SPEED2)
+		elseif KEY:lower() == 'd' then 
+			CONTROL.R = (SPEED2)
+		end
+		pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+	end)
+	flyKeyUp = Mouse.KeyUp:Connect(function(KEY)
+		if KEY:lower() == 'w' then
+			CONTROL.F = 0
+		elseif KEY:lower() == 's' then
+			CONTROL.B = 0
+		elseif KEY:lower() == 'a' then
+			CONTROL.L = 0
+		elseif KEY:lower() == 'd' then
+			CONTROL.R = 0
+		end
+	end)
+    fly2()
+end
+
+function Unfly()
+	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
+	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+end
+
+
 function CancelAttack()
     local args = {
         [1] = "Down",
         [2] = false
     }
-    game:GetService("Players").LocalPlayer.Character.CharacterHandler.M2:FireServer(unpack(args))
+    LocalPlayer.Character.CharacterHandler.M2:FireServer(unpack(args))
     
     local args = {
         [1] = "Up"
     }
 
-    game:GetService("Players").LocalPlayer.Character.CharacterHandler.M2:FireServer(unpack(args))
+    LocalPlayer.Character.CharacterHandler.M2:FireServer(unpack(args))
 end
-----
+
 function Parry()
     local args = {
         [1] = "Down"
     }
-    game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
+    LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
     
     for i = 1, 10 do
         task.wait()
         local args = {
             [1] = "Hold"
         }
-        game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
+        LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
     end    
     
     local args = {
         [1] = "Up"
     }
-    game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
+    LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
 end
 
 function Block(attack)
@@ -185,22 +301,22 @@ function Block(attack)
     local args = {
         [1] = "Down"
     }
-    game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
+    LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
     
     local st = os.clock()
     
-    while os.clock() - st < .3 do
+    while os.clock() - st < .6 do
         local args = {
             [1] = "Hold"
         }
-        game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
+        LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
         task.wait()
     end
     task.wait()
     local args = {
         [1] = "Up"
     }
-    game:GetService("Players").LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
+    LocalPlayer.Character.CharacterHandler.F:FireServer(unpack(args))
     
 end
 
@@ -209,20 +325,21 @@ function swing()
         [1] = "Down",
         [2] = false
     }
-    game:GetService("Players").LocalPlayer.Character.CharacterHandler.M1:FireServer(unpack(args))
+    LocalPlayer.Character.CharacterHandler.M1:FireServer(unpack(args))
 end
 
 
 function Roll()
-    keypress(0x51) -- change to characterhandler.q?
-    task.wait()
-    keyrelease(0x51)
+    keytap(0x51) -- change to characterhandler.q?
 end
 
-function DefensiveReaction(attack, FeintRoll)
+function DefensiveReaction(attack, enemy)
     if attack[3] == "Parry" then
-        if game.ReplicatedStorage.CharacterData[game.Players.LocalPlayer.Name].StatusFolder:FindFirstChild("ParryCD") ~= nil then
+        if game.ReplicatedStorage.CharacterData[LocalPlayer.Name].StatusFolder:FindFirstChild("ParryCD") ~= nil then
             if attack[1] == "Critical" or attack[1] == "StrongLeft" then task.wait(.1) Roll() else Block(attack) end
+        elseif game.ReplicatedStorage.CharacterData[LocalPlayer.Name].Configurations.Posture.Value + enemy:FindFirstChild("PostureDamage", true).Value > game.ReplicatedStorage.CharacterData[LocalPlayer.Name].Configurations.Posture:GetAttribute("Max") then
+            task.wait(.1)
+            Roll()
         else
             Parry()
         end
@@ -239,8 +356,10 @@ function ConnectListeners(character)
     animator.AnimationPlayed:Connect(function(animtrack)
         --
         if AutoParry == false then return end
-        if not AutoParrylist[animtrack.Animation.AnimationId] then return end -- check on why parry anim slips past
+        if not AutoParrylist[animtrack.Animation.AnimationId] then return end
         
+        task.wait(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005)) -- multiply by animtrack.speed?
+
         local range = 25
         if AutoParrylist[animtrack.Animation.AnimationId][4] == "Ranged" then range = 30 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "Far" then range = 60 elseif AutoParrylist[animtrack.Animation.AnimationId][4] == "MONKE" then range = 200 end 
         if (LocalPlayer.Character.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude > range then return end
@@ -286,9 +405,28 @@ function ConnectListeners(character)
         if AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005) > 0.3 and game.ReplicatedStorage.CharacterData[game.Players.LocalPlayer.Name].StatusFolder:FindFirstChild("ParryCD") ~= nil then
             DefensiveReaction()
         end]]
-        task.wait(AutoParrylist[animtrack.Animation.AnimationId][2] - (0.001*game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() + 0.005)) -- multiply by animtrack.speed?
+        if animtrack.Animation.AnimationId == "rbxassetid://8686839894" then -- double sharkop swing
+            Parry()
+            wait(0.2)
+            Parry()
+            return
+        elseif animtrack.Animation.AnimationId == "rbxassetid://9137450354" then -- monke treiple
+            Parry()
+            wait(0.2)
+            Parry()
+            wait(0.2)
+            Parry()
+        end
+        if animtrack.Animation.AnimationId == "rbxassetid://8917904390" then -- enfocer spin
+            local ti = tick()
+            repeat 
+                Parry()
+                task.wait()
+            until 
+                tick() - ti > 5
+        end
 
-        if not OpponentFeinted then DefensiveReaction(AutoParrylist[animtrack.Animation.AnimationId]) end
+        if not OpponentFeinted then DefensiveReaction(AutoParrylist[animtrack.Animation.AnimationId], character) end
         connection:Disconnect()
         OpponentFeinted = false
     end)
@@ -354,7 +492,7 @@ local SpeedHaxToggle = MobilitySection:AddToggle({
     callback = function(boolV)
         getgenv().SpeedHack = boolV
         if not boolV then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 15
+            LocalPlayer.Character.Humanoid.WalkSpeed = 15
         end
     end
 })
@@ -600,103 +738,6 @@ CombatColumn:Init()
 
 
 -- // Connected Functions
-    -- Credit to infinite yield for some of these functions
-
-local __namecall
-__namecall = hookmetamethod(game, "__namecall", function(...)
-    -- // Vars
-    local args = {...}
-    local self = args[1]
-    local method = getnamecallmethod()
-
-    -- // Check if it is the remote
-    if (self == CheckSpeed and method == "FireServer") then
-        if SpeedHack then   
-            return Library.flags["Speed Hack Speed"],Library.flags["Speed Hack Speed"]
-        elseif CFly then
-            return Library.flags["Fly Speed"],Library.flags["Fly Speed"]
-        end
-    end
-
-    -- // Return default
-    return __namecall(...)
-end)
-
-
-
-CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-SPEED2 = 1
-function sFLY()
-    repeat wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    local hrp = LocalPlayer.Character.HumanoidRootPart
-   
-	local SPEED = 0
-    local function fly2()
-        
-		local BV = Instance.new('BodyVelocity')
-		BV.Name = "RollVelocity"
-        BV.P = math.huge
-		BV.Parent = hrp
-		BV.Velocity = Vector3.new(0,0,0)
-		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
-		
-		task.spawn(function()
-			repeat wait()
-				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
-					SPEED = Library.flags["Fly Speed"]
-				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
-					SPEED = 0
-				end
-				if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
-					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
-					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
-				elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
-					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
-				else
-					BV.velocity = Vector3.new(0, 0, 0)
-				end
-			until not CFly
-			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-			SPEED = 0
-			BV:Destroy()
-		end)
-    end
-    if UIS:IsKeyDown("W") then CONTROL.F = (SPEED2)
-    elseif UIS:IsKeyDown("S") then CONTROL.B = - (SPEED2)
-    elseif UIS:IsKeyDown("A") then CONTROL.L = - (SPEED2)
-    elseif UIS:IsKeyDown("D") then CONTROL.R = (SPEED2) end
-    flyKeyDown = mouse.KeyDown:Connect(function(KEY)
-		if KEY:lower() == 'w' then
-			CONTROL.F = (SPEED2)
-		elseif KEY:lower() == 's' then
-			CONTROL.B = - (SPEED2)
-		elseif KEY:lower() == 'a' then
-			CONTROL.L = - (SPEED2)
-		elseif KEY:lower() == 'd' then 
-			CONTROL.R = (SPEED2)
-		end
-		pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
-	end)
-	flyKeyUp = mouse.KeyUp:Connect(function(KEY)
-		if KEY:lower() == 'w' then
-			CONTROL.F = 0
-		elseif KEY:lower() == 's' then
-			CONTROL.B = 0
-		elseif KEY:lower() == 'a' then
-			CONTROL.L = 0
-		elseif KEY:lower() == 'd' then
-			CONTROL.R = 0
-		end
-	end)
-    fly2()
-end
-
-function Unfly()
-	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
-	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
-end
 
 --- Main
 
@@ -705,7 +746,7 @@ if LocalPlayer.Character == nil then
     repeat 
         wait() 
     until 
-        game:GetService("Players").LocalPlayer.Character
+        LocalPlayer.Character
 end
 
 
@@ -743,10 +784,19 @@ for _, plr in pairs(Players) do
 end
 
 game:GetService("Players").PlayerAdded:Connect(function(plr)
-    Library.options["AP Whitelist"]:AddValue(tostring(plr))
+    Library.options["AP Whitelist"]:AddValue(plr.Name)
     plr.CharacterAdded:Connect(function()
         repeat wait() until plr.Character:FindFirstChild("Humanoid")
         ConnectListeners(plr.Character)
+    end)
+    task.spawn(function()
+        repeat wait() until plr.Character ~= nil
+        if plr.Character:FindFirstChild("Shirt") == nil then return end
+        f, _ = string.find(plr.Character.Shirt.ShirtTemplate, "9681905497")
+        if f == nil then return end
+        if table.find(modlist, plr.Name) == nil then return end
+        Library:SendNotification(10, ("Moderator Detected:".. plr.Name)) 
+        table.insert(modlist, #modlist + 1, plr.Name)
     end)
 end)
 ------------------------------------------------------------------
@@ -793,10 +843,9 @@ RunService.Heartbeat:Connect(function(deltaTime)
     -- mixup swingspeed option lmfao
 end)
 
-local mouse = LocalPlayer:GetMouse()
-mouse.KeyDown:Connect(function(Key)
+Mouse.KeyDown:Connect(function(Key)
     if InfiniteJump == true and Key == " " then
-	    game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState(3)
+	    LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState(3)
     end
 end)
 
@@ -816,7 +865,7 @@ UIS.InputBegan:connect(function(key)
         local args = {
             [1] = "RunStart"
         }
-        game:GetService("Players").LocalPlayer.Character.Run.RemoteEvent:FireServer(unpack(args))
+        LocalPlayer.Character.Run.RemoteEvent:FireServer(unpack(args))
     end
 end)
 
@@ -832,6 +881,15 @@ game.Workspace.DebrisParts.ChildAdded:connect(function(part)
         Parry()
     end
     if part.Name == "Bolt" then 
+        local t = tick()
+        repeat 
+            RunService.Heartbeat:Wait() 
+            if tick() - t > 5 then return end
+        until 
+            (LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude < 10
+        Parry()
+    end
+    if part.Name == "Part" then 
         local t = tick()
         repeat 
             RunService.Heartbeat:Wait() 
@@ -868,6 +926,11 @@ end)
 game:GetService("Players").PlayerRemoving:Connect(function(PlayerRemoving)
     library.options["AP Whitelist"]:RemoveValue(PlayerRemoving.Name)
     if PlayerRemoving == LocalPlayer then
+        
+        for _, v in next, library.options["Ap Whitelist"] do
+            library.options["Ap Whitelist"]:RemoveValue(v)
+        end
+        
 	    Library:SaveConfig(Library.flags["Config List"])
     end
 end)
