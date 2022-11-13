@@ -12,9 +12,8 @@ for Name,ID in next, GameList do
 	end
 end
 
+library:Init()
+
 if GameTitle == "Fakewoken 3" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Triggerd3/trigger-lego-scripts/main/Games/squidward-emoji.lua"))
 end
-
-
-library:Init()
