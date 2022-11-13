@@ -12,6 +12,7 @@ for Name,ID in next, GameList do
 	end
 end
 
+print(GameTitle)
 if GameTitle == "Fakewoken 3" then
 	print("dawgwiththebuttah")
 	library:Init()
