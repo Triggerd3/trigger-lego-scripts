@@ -1,28 +1,29 @@
 # trigger-lego-scripts
-```
+``` lua
 forbiddenColors = {
-  Color3.new("Dark brown"),
-  Color3.new("Black"),
-  Color3.new("Light orange brown"),
-  Color3.new("Earth orange"),
-  Color3.new("Dark orange"),
-  Color3.new("Earth yellow"),
-  Color3.new("Dark nougat"),
-  Color3.new("Reddish brown"),
-  Color3.new("Rust"),
-  Color3.new("Brown"),
-  Color3.new("Cocoa"),
-  Color3.new("Pine cone"),
-  Color3.new("Dirt brown"),
-  Color3.new("Dark Taupe"),
-  Color3.new("Burnt Sienna"),
-  Color3.new("Reddish brown")
+	BrickColor.new("Dark brown"),
+	BrickColor.new("Black"),
+	BrickColor.new("Light orange brown"),
+	BrickColor.new("Earth orange"),
+	BrickColor.new("Dark orange"),
+	BrickColor.new("Earth yellow"),
+	BrickColor.new("Dark nougat"),
+	BrickColor.new("Reddish brown"),
+	BrickColor.new("Rust"),
+	BrickColor.new("Brown"),
+	BrickColor.new("Cocoa"),
+	BrickColor.new("Pine cone"),
+	BrickColor.new("Dirt brown"),
+	BrickColor.new("Dark Taupe"),
+	BrickColor.new("Burnt Sienna"),
+	BrickColor.new("Reddish brown")
 }
 
-game:GetService("PlayerService").PlayerAdded:Connect(function(Player)
-  repeat wait() until Player.Character
-  if table.find(forbiddonColor, Player.Character.Humanoid.SkinTone.Color) ~= nil then
-    Player:Kick()
-  end
+game:GetService("Players").PlayerAdded:Connect(function(Player)
+	Player.CharacterAppearanceLoaded:Connect(function(char)
+		if table.find(forbiddenColors, char.Head.BrickColor) ~= nil then
+			Player:Kick()
+		end
+	end)
 end)
 ```
